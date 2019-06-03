@@ -39,6 +39,14 @@ This will bring up a window to help you add untracked files. After selecting "ad
 git commit -m [Your message here]
 ```
 
+## Staging changes 
+
+Generally one wants to avoid adding new files but stash the changes on already added files. Use the following:
+
+```console
+git add -u
+```
+
 ## Setting up repo for pushing 
 
 ```console
