@@ -21,7 +21,7 @@ echo node_modules>>.gitignore
 
 ``` console
 git status
-``
+```
 
 ## Git adding files 
 
