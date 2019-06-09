@@ -1,0 +1,9 @@
+{
+    "influxURL" : "localhost",
+    "dbName" : "myData",
+    "nginxURL" : "",
+    "influxUser" : "admin",
+    "influxPassword" : "panorama",
+    "port" : 8086,
+    "https" : false
+}
