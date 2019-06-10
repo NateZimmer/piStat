@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "ping": "^0.2.2",
     "rpi-gpio": "^2.1.3"
   }
 }
