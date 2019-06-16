@@ -5,6 +5,11 @@ var gpio = require('rpi-gpio');
 var influx = require('./sendToInflux.js');
 var gpiop = gpio.promise;
 var screen = require('./screen_ui.js');
+var debug = 0;
+var colors = require('colors');
+var changeTimeout = 100;
+var changeLock = false;
+var enableAuto = false;
 
 async function setup(){
 	gpio.setup(state.upTempIO, gpio.DIR_IN, gpio.EDGE_FALLING);
@@ -13,23 +18,38 @@ async function setup(){
     
     gpio.on('change', function(channel, value) {
 
-        switch(channel){
-            case state.upTempIO:
-                console.log('[Info] User increased setpoint');
-                changeSetPoint(1)
-                break;
-            case state.downTempIO: 
-                console.log('[Info] User decreased setpoint');
-                changeSetPoint(-1);
-                break;
-            default:
+        if(!changeLock){
+            changeLock = true;
+            switch(channel){
+                case state.upTempIO:
+                    changeSetPoint(1)
                     break;
+                case state.downTempIO: 
+                    changeSetPoint(-1);
+                    break;
+                case state.modeChangeIO: 
+                    changeMode();
+                    break;
+                default:
+                        break;
+            }
+            setTimeout(()=>{changeLock = false;},changeTimeout);
+            debug ? console.log('[Info] '.green + `Changed State Channel:${channel}, Value: ${value}`) : null;
         }
 
-		console.log(`[Info] Changed State Channel:${channel}, Value: ${value}`);
-		handleData(channel,value);
 	});
-	
+	debug ? console.log('Finished pin configuration') : null;
+}
+
+
+function changeMode(){
+    var index = state.modes.indexOf(state.mode); 
+    state.mode = state.modes[(index + 1) % state.modes.length];
+    state.mode = state.mode == 'Auto' && !enableAuto ? 'Off' : state.mode;
+    console.log('[Info] '.green + ' Mode changed: ' + state.mode.yellow);
+    state.saveState(); 
+    screen.drawMode();
+    screen.drawSP();
 }
 
 
@@ -50,6 +70,8 @@ function changeSetPoint(val){
         default:
             break; 
     }
+    state.mode != 'Off' ? console.log('[Info] '.green + ' User changed setpoint to ' + state.activeSp.toString().yellow) : null;
+    state.saveState();
     screen.drawSP();
 
 }

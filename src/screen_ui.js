@@ -30,7 +30,7 @@ var netInfoHeight = 48;
 var humidY = 18;
 var humidX = 100;
 var SpXLocation = humidX;
-var SpYLocation = 24;
+var SpYLocation = 27;
 
 
 var oled = new oled(i2cBus, opts);
@@ -60,9 +60,9 @@ async function drawNetInfo(xPos,yPos,interface){
   oled.writeString(font, 1, 'SSID: ' + ssid, 1, true);  
 }
 
-function pad(num, size) {
+function pad(num, size,padchar) {
   var s = num+"";
-  while (s.length < size) s = "0" + s;
+  while (s.length < size) s = padchar + s;
   return s;
 }
 
@@ -71,10 +71,10 @@ function drawTime(xpos,ypos){
   var dateN = new Date(Date.now());
   var hourStr = dateN.getHours();
   var timeStr = hourStr > 12 ? 'PM' : 'AM';
-  var minStr = pad(dateN.getMinutes(),2);
+  var minStr = pad(dateN.getMinutes(),2,'0');
   hourStr = hourStr > 12 ? hourStr - 12 : hourStr;
   hourStr = hourStr == 0 ? 12 : hourStr;
-  hourStr = pad(hourStr,2);
+  hourStr = pad(hourStr,2,' ');
   oled.setCursor(xpos,ypos);
   oled.writeString(font, 1, hourStr , 1, true);
   oled.setCursor(xpos+13,ypos);
@@ -97,9 +97,11 @@ async function drawHumidity(){
 
 async function drawSP(){
   var str = 'S:' + state.activeSp.toFixed(0);
+  oled.setCursor(SpXLocation,SpYLocation);
   if(state.mode != 'Off'){
-    oled.setCursor(SpXLocation,SpYLocation);
     oled.writeString(font, 1, str , 1, true);
+  }else{
+    oled.writeString(font, 1, '    ', 1, true);
   }
 }
 screen_ui.drawSP = drawSP;
@@ -107,8 +109,10 @@ screen_ui.drawSP = drawSP;
 function drawMode(){
   var mode = state.mode;
   oled.setCursor(modeX,timeH);
+  mode = mode == 'Off' ? 'Off ' : mode;
   oled.writeString(font, 1, mode , 1, true);
 }
+screen_ui.drawMode = drawMode;
 
 function drawLogo(){
   oled.centerTextWrite(font,0,'NAST',2);
