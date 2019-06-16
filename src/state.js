@@ -3,7 +3,8 @@
 
 var state = {};
 
-state.temp = 70;
+state.temperature = 70;
+state.humidity = 20;
 state.csp = 72;
 state.hsp = 72;
 state.modes = ['Off','Heat','Cool','Auto'];
@@ -14,6 +15,6 @@ state.netSesne = 0;
 state.netSesneEn = 0;
 state.occSense = 0;
 state.occSenseEn = 0;
-
+state.activeSp = state.csp;
 
 module.exports = state;

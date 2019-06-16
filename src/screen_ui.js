@@ -1,7 +1,6 @@
 // NZ
 // License: MIT
 
-
 var i2c = require('i2c-bus');
 var i2cBus = i2c.openSync(1);
 var oled = require('oled-i2c-bus');
@@ -9,20 +8,28 @@ var screen_lib = require('./screen_lib.js');;
 var font = require('oled-font-5x7');
 var os_lib = require('./os_lib.js');
 var u = require('./util.js');
+var state = require('./state.js');
 var debug = 0;
 
-async function testSSID(){
-  var result = await os_lib.get_ssid('wlan0');
-  console.log(result);
-}
-testSSID();
-
-
+// Screen opts
 var opts = {
   width: 128,
   height: 64,
   address: 0x3C
 };
+
+// UI locations 
+var side1 = 38;
+var side2 = 87;
+var greenH = 15;
+var l2 = 44;
+var timeH = 4;
+var modeX = 95;
+var netInfoHeight = 48;
+var humidY = 18;
+var humidX = 100;
+var SpXLocation = humidX;
+var SpYLocation = 24;
 
 
 var oled = new oled(i2cBus, opts);
@@ -58,14 +65,6 @@ function pad(num, size) {
   return s;
 }
 
-var side1 = 38;
-var side2 = 87;
-var greenH = 15;
-var l2 = 44;
-var timeH = 4;
-var modeX = 95;
-var netInfoHeight = 48;
-
 function drawTime(xpos,ypos){
   oled.LETTERSPACING = 0;
   var dateN = new Date(Date.now());
@@ -85,13 +84,26 @@ function drawTime(xpos,ypos){
 }
 
 async function drawTemp(yPos){
-  var temp = 70.0;
+  var temp = state.temperature;
   oled.centerTextWrite(font,yPos,temp.toFixed(1),3);
 }
 
+async function drawHumidity(){
+  var str = 'H:' + state.humidity.toFixed(0);
+  oled.setCursor(humidX,humidY);
+  oled.writeString(font, 1, str , 1, true);
+}
+
+async function drawSP(){
+  var str = 'S:' + state.activeSp.toFixed(0);
+  if(state.mode != 'Off'){
+    oled.setCursor(SpXLocation,SpYLocation);
+    oled.writeString(font, 1, str , 1, true);
+  }
+}
 
 function drawMode(){
-  var mode = 'Heat';
+  var mode = state.mode;
   oled.setCursor(modeX,timeH);
   oled.writeString(font, 1, mode , 1, true);
 }
@@ -110,8 +122,10 @@ async function drawUI(){
   drawLogo();
   await drawTemp(18);
   await drawNetInfo(0,netInfoHeight,'wlan0');
+  drawHumidity();
   drawTime(0,timeH);
   drawMode();
+  drawSP();
 }
 drawUI();
 

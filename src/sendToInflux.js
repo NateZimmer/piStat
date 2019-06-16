@@ -1,3 +1,6 @@
+// NZ 
+// License: MIT
+
 var fs = require('fs');
 
 var influxConfigPath = 'influxConfig.json';
