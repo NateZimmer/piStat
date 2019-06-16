@@ -6,7 +6,9 @@ var i2c = require('i2c-bus');
 var i2cBus = i2c.openSync(1);
 var oled = require('./screen_lib.js');;
 var font = require('oled-font-5x7');
+var os_lib = require('./os_lib.js');
 
+var test = os_lib.get_ssid('wlan0');
 
 var opts = {
   width: 128,
