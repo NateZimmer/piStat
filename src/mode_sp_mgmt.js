@@ -53,3 +53,4 @@ function changeSetPoint(val){
     screen.drawSP();
 
 }
+setup();

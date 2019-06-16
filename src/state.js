@@ -19,6 +19,9 @@ state.occSense = 0;
 state.occSenseEn = 0;
 state.activeSp = state.csp;
 
+
+// PINS
+
 state.upTempIO = 13; // GPIO 27
 state.downTempIO = 15; // GPIO 22
 state.modeChangeIO = 16; // GPIO 23
