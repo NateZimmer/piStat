@@ -19,4 +19,4 @@ var opts = {
 
 var oled = new oled(i2cBus, opts);
 oled.clearDisplay();
-oled.centerTextWrite(font, 1, 'Tom is a goat!');
+//oled.centerTextWrite(font, 1, 'Tom is a goat!');
