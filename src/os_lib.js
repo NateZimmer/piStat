@@ -115,10 +115,8 @@ os_lib.runCommand = runCommand;
 
 async function get_ssid(interface){
     var result = await runCommand('iwconfig | grep ' + interface);
-    console.log(result);
     result = result.match(/ESSID:".*"/g);
-    console.log(result);
-    result = result.split('"')[1]
+    result = result[0].split('"')[1]
     return result;
 }
 os_lib.get_ssid = get_ssid;
