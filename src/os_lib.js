@@ -5,7 +5,7 @@
 var os = require('os');
 var ping = require('ping');
 const cp = require('child_process');
-var influx = require('./sendToInflux.js');
+const publicIp = require('public-ip');
 var debug = false; // Prints debug messages
 
 var os_lib = {};
@@ -55,38 +55,9 @@ function pingIP(ipTemp){
 }
 
 
-function sweepNetwork(ipStr){
-    return new Promise(async function(resolve){
-        var ipSplit = ipStr.split('.');
-        var ipSub = ipSplit[0] + '.' + ipSplit[1] + '.' + ipSplit[2]+'.'
-        console.log('Scanning IP: ' + ipSub + 'xxx');
-    
-        for(var i = 1; i < 255; i++){
-            var ipTemp = ipSub + (i).toFixed();
-            debug ? console.log('Scanning IP: ' + ipTemp) : null;
-            pingIP(ipTemp);
-            
-            await sleep(5);
-        }
-        console.log('Finished scanning, waiting for arp table to resolve');
-        await sleep(5000);
-        var result = await runCommand('arp');
-        await sleep(5000);
-        result = await runCommand('arp');
-        var MACs = parseMACs(result);
-        var influxArray = [];
-
-        if(Array.isArray(MACs)){
-            for(var MAC of MACs){
-                console.log(`Found MAC: ${MAC}`);
-                var influxObj = {measurement: 'Read MACs', fields:{value:1} , tags:{MAC:MAC}, date: Date.now()*1000*1000};
-                influxArray.push(influxObj);
-            }
-            influx.writeInfluxBatch(influxArray);
-        }
-        result = await runCommand('sudo ip -s -s neigh flush all');
-        resolve('done');
-    });
+os_lib.getPublicIp = async ()=>{
+    var res = await publicIp.v4();
+    return res;
 }
 
 
@@ -115,10 +86,8 @@ os_lib.runCommand = runCommand;
 
 async function get_ssid(interface){
     var result = await runCommand('iwconfig | grep ' + interface);
-    console.log(result);
     result = result.match(/ESSID:".*"/g);
-    console.log(result);
-    result = result.split('"')[1]
+    result = result[0].split('"')[1]
     return result;
 }
 os_lib.get_ssid = get_ssid;

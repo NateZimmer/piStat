@@ -4,11 +4,19 @@
 
 var i2c = require('i2c-bus');
 var i2cBus = i2c.openSync(1);
-var oled = require('./screen_lib.js');;
+var oled = require('oled-i2c-bus');
+var screen_lib = require('./screen_lib.js');;
 var font = require('oled-font-5x7');
 var os_lib = require('./os_lib.js');
+var u = require('./util.js');
+var debug = 0;
 
-var test = os_lib.get_ssid('wlan0');
+async function testSSID(){
+  var result = await os_lib.get_ssid('wlan0');
+  console.log(result);
+}
+testSSID();
+
 
 var opts = {
   width: 128,
@@ -18,5 +26,101 @@ var opts = {
 
 
 var oled = new oled(i2cBus, opts);
-oled.clearDisplay();
-//oled.centerTextWrite(font, 1, 'Tom is a goat!');
+screen_lib.extend(oled);
+
+async function drawNetInfo(xPos,yPos,interface){
+  var ssid = await os_lib.get_ssid(interface);
+  ssid = ssid.substr(0,15);
+  if(ssid ==''){
+    console.log('[Warning]:No SSID found');
+  }
+  var nets = os_lib.getNetworkObjs();
+  var ipStr = '';
+  for(var net of nets){
+    if(net.type.toLowerCase().includes(interface)){
+      ipStr = net.ip;
+      break;
+    }
+  }
+  if(ipStr ==''){
+    console.log('[Warning]:No IP found')
+  }
+  oled.setCursor(xPos,yPos);
+  oled.writeString(font, 1, 'IP: ' + ipStr, 1, true);
+  yPos +=8;
+  oled.setCursor(xPos,yPos);
+  oled.writeString(font, 1, 'SSID: ' + ssid, 1, true);  
+}
+
+function pad(num, size) {
+  var s = num+"";
+  while (s.length < size) s = "0" + s;
+  return s;
+}
+
+var side1 = 38;
+var side2 = 87;
+var greenH = 15;
+var l2 = 44;
+var timeH = 4;
+var modeX = 95;
+var netInfoHeight = 48;
+
+function drawTime(xpos,ypos){
+  oled.LETTERSPACING = 0;
+  var dateN = new Date(Date.now());
+  var hourStr = dateN.getHours();
+  var timeStr = hourStr > 12 ? 'PM' : 'AM';
+  var minStr = pad(dateN.getMinutes(),2);
+  hourStr = hourStr > 12 ? hourStr - 12 : hourStr;
+  hourStr = hourStr == 0 ? 12 : hourStr;
+  hourStr = pad(hourStr,2);
+  oled.setCursor(xpos,ypos);
+  oled.writeString(font, 1, hourStr , 1, true);
+  oled.setCursor(xpos+13,ypos);
+  oled.writeString(font, 1, minStr , 1, true);
+  oled.setCursor(xpos+24,ypos);
+  oled.writeString(font, 1, timeStr , 1, true);
+  oled.LETTERSPACING = 1;
+}
+
+async function drawTemp(yPos){
+  var temp = 70.0;
+  oled.centerTextWrite(font,yPos,temp.toFixed(1),3);
+}
+
+
+function drawMode(){
+  var mode = 'Heat';
+  oled.setCursor(modeX,timeH);
+  oled.writeString(font, 1, mode , 1, true);
+}
+
+function drawLogo(){
+  oled.centerTextWrite(font,0,'NAST',2);
+  oled.drawLine(0, greenH, 127, greenH, 1); // --------------
+  oled.drawLine(side1, 0, side1, greenH, 1); // | 
+  oled.drawLine(side2, 0, side2, greenH, 1); // | 
+  oled.drawLine(0, l2, 127, l2, 1); // ----------- 
+}
+
+async function drawUI(){
+
+  oled.clearDisplay();
+  drawLogo();
+  await drawTemp(18);
+  await drawNetInfo(0,netInfoHeight,'wlan0');
+  drawTime(0,timeH);
+  drawMode();
+}
+drawUI();
+
+setTimeout(()=>{
+  setInterval(()=>{
+    drawTime(0,timeH);
+    debug ? console.log('Updating Time') : null;
+  },60*1000)
+},5000)
+
+//oled.setCursor(1, 1);
+//oled.writeString(font, 1, 'Goat', 1, true);

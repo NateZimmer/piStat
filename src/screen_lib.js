@@ -1,13 +1,19 @@
-var oled = require('oled-i2c-bus');
+var screen_lib = {};
 
 
-oled.centerTextWrite = function(yPos,font,textStr,size){
-	var xSize = oled.WIDTH;
-	var strLen = textStr.length();
-	var xSize = font.width;
-	var centerX = xSize/2 - strLen*font.width/2 
-	oled.setCursor(centerX, yPos);
-	oled.writeString(font, size, textStr, 1, true);
+screen_lib.extend = function(oled){
+
+	oled.centerTextWrite = function(font,yPos,textStr,size){
+		var xSize = oled.WIDTH;
+		var strLen = textStr.length;
+		var strPixels = strLen*font.width*size + (strLen-1)*oled.LETTERSPACING;
+		var centerX = Math.floor(xSize/2 - strPixels/2);
+		oled.setCursor(centerX, yPos);
+		oled.writeString(font, size, textStr, 1, true);
+	}
+
 }
 
-module.exports = oled;
+
+
+module.exports = screen_lib;
