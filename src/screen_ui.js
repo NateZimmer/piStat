@@ -1,4 +1,4 @@
-// NZ
+// Screen UI
 // License: MIT
 
 var i2c = require('i2c-bus');
@@ -10,6 +10,7 @@ var os_lib = require('./os_lib.js');
 var u = require('./util.js');
 var state = require('./state.js');
 var debug = 0;
+var screen_ui = {};
 
 // Screen opts
 var opts = {
@@ -101,6 +102,7 @@ async function drawSP(){
     oled.writeString(font, 1, str , 1, true);
   }
 }
+screen_ui.drawSP = drawSP;
 
 function drawMode(){
   var mode = state.mode;
@@ -136,5 +138,4 @@ setTimeout(()=>{
   },60*1000)
 },5000)
 
-//oled.setCursor(1, 1);
-//oled.writeString(font, 1, 'Goat', 1, true);
+module.exports = screen_ui;

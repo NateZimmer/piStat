@@ -1,4 +1,4 @@
-// NZ 
+// Send To Influx 
 // License: MIT
 
 var fs = require('fs');

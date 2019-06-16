@@ -1,4 +1,3 @@
-// NZ 
 // License: MIT
 // Scans network, pumps MACs to influx
 

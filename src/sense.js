@@ -1,7 +1,7 @@
-// NZ
+// Sense
 // License: MIT
 
-var gpio = require('rpi-gpio')
+var gpio = require('rpi-gpio');
 var influx = require('./sendToInflux.js');
 var gpiop = gpio.promise;
 

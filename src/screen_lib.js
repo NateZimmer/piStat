@@ -1,4 +1,4 @@
-// NZ 
+// Screen Lib 
 // License: MIT
 
 var screen_lib = {};

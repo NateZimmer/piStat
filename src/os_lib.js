@@ -1,6 +1,5 @@
-// NZ 
 // License: MIT
-// OS Info
+// OS Lib
 
 var os = require('os');
 var ping = require('ping');
