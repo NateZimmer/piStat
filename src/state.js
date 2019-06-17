@@ -14,10 +14,10 @@ state.csp = 72;
 state.hsp = 72;
 state.cspLimit = 50;
 state.hspLimit = 99;
-state.modes = ['Off','Heat','Cool','Auto'];
 state.mode = state.modes[0]; 
-state.occStates = ['Home','Away'];
+state.modes = ['Off','Heat','Cool','Auto'];
 state.occState = state.occStates[0];
+state.occStates = ['Home','Away'];
 state.netSesne = 0;
 state.netSesneEn = 0;
 state.occSense = 0;
@@ -27,6 +27,13 @@ state.heatMinOnTime = 30;
 state.heatMinOffTime = 30;
 state.coolMinOnTime = 60;
 state.coolMinOffTime = 60;
+state.controlDeadBand = 1;
+state.controlTick = 1;
+state.controlDelay = 5;
+state.h1_enabled = true; 
+state.c1_enabled = true; 
+state.f1_enabled = true; 
+
 
 // PINS
 
