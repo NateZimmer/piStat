@@ -31,7 +31,7 @@ var humidY = 18;
 var humidX = 100;
 var SpXLocation = humidX;
 var SpYLocation = 27;
-
+var tempY = 18;
 
 var oled = new oled(i2cBus, opts);
 screen_lib.extend(oled);
@@ -84,16 +84,18 @@ function drawTime(xpos,ypos){
   oled.LETTERSPACING = 1;
 }
 
-async function drawTemp(yPos){
+async function drawTemp(){
   var temp = state.temperature;
-  oled.centerTextWrite(font,yPos,temp.toFixed(1),3);
+  oled.centerTextWrite(font,tempY,temp.toFixed(1),3);
 }
+screen_ui.drawTemp = drawTemp;
 
 async function drawHumidity(){
   var str = 'H:' + state.humidity.toFixed(0);
   oled.setCursor(humidX,humidY);
   oled.writeString(font, 1, str , 1, true);
 }
+screen_ui.drawHumidity = drawHumidity;
 
 async function drawSP(){
   var str = 'S:' + state.activeSp.toFixed(0);
@@ -126,7 +128,7 @@ async function drawUI(){
 
   oled.clearDisplay();
   drawLogo();
-  await drawTemp(18);
+  await drawTemp();
   await drawNetInfo(0,netInfoHeight,'wlan0');
   drawHumidity();
   drawTime(0,timeH);
