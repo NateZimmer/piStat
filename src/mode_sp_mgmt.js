@@ -46,7 +46,7 @@ function changeMode(){
     var index = state.modes.indexOf(state.mode); 
     state.mode = state.modes[(index + 1) % state.modes.length];
     state.mode = state.mode == 'Auto' && !enableAuto ? 'Off' : state.mode;
-    console.log('[Info] '.green + ' Mode changed: ' + state.mode.yellow);
+    console.log('[Info] '.green + 'Mode changed: ' + state.mode.yellow);
     state.saveState(); 
     screen.drawMode();
     screen.drawSP();

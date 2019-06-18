@@ -2,6 +2,8 @@
 // License: MIT
 
 var fs = require('fs');
+require('colors');
+var debug = 0;
 
 var influxConfigPath = 'influxConfig.json';
 var config = JSON.parse(fs.readFileSync(influxConfigPath).toString()); // Read Database Config File 
@@ -47,7 +49,7 @@ updateDatabaseName(ConfigDB);
 var lastStringLength = 0;
 
 function dlog(msg){
-    console.log(msg);
+    debug ? console.log(msg) : null;
 }
 
 async function writeInfluxBatch(COVArray){
@@ -81,7 +83,7 @@ async function writeInfluxBatch(COVArray){
                 break;
             }
             if(res.success == false){
-                console.log('Error in batch' + j.toFixed(),res.msg);
+                console.log('[Error]'.red +' in batch' + j.toFixed(),res.msg);
             }
         }
         lastStringLength = 0;
