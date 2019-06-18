@@ -40,7 +40,8 @@ state.f1_enabled = true;
 state.upTempIO = 13; // GPIO 27
 state.downTempIO = 15; // GPIO 22
 state.modeChangeIO = 16; // GPIO 23
-
+state.led_pin = 11; // GPIO 17
+state.sensePin = 12; // GPIO 18
 
 // Functions  
 
