@@ -12,32 +12,22 @@ const options = {
 };
 
 const bme280 = new BME280(options);
-var updateScreen = false;
 
 const readSensorData = () => {
   bme280.readSensorData()
     .then((data) => {
-      var influxArray = [];
+
       data.temperature_F = BME280.convertCelciusToFahrenheit(data.temperature_C);
       data.pressure_inHg = BME280.convertHectopascalToInchesOfMercury(data.pressure_hPa);
       
       debug ? console.log('[Data V]'.green + JSON.stringify(data)) : null;
       if(Math.abs(state.temperature - data.temperature_F) > state.temperature_cov){
-        state.temperature = data.temperature_F;
-        console.log('[Data]'.green + ' Temperature now is: ' + state.temperature.toFixed(1).yellow);
-        var influxZNT = {measurement: 'Temperature', fields:{value:state.temperature} , tags:{site:'nate'}, date: Date.now()*1000*1000};
-        influxArray.push(influxZNT);
+        state.updateState('temperature',data.temperature_F);
+        screen.drawTemp();
       }
 
       if(Math.abs(state.humidity - data.humidity) > state.humidity_cov){
-        state.humidity = data.humidity;
-        console.log('[Data]'.green + ' Humidity now is: ' + state.humidity.toFixed(1).yellow);
-        var influxH = {measurement: 'Humidity', fields:{value:state.humidity} , tags:{site:'nate'}, date: Date.now()*1000*1000};
-        influxArray.push(influxH);
-      }
-      if(influxArray.length>0){
-        influx.writeInfluxBatch(influxArray);
-        screen.drawTemp();
+        state.updateState('humidity',data.humidity);
         screen.drawHumidity();
       }
 

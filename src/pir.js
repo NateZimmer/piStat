@@ -2,7 +2,6 @@
 // License: MIT
 
 var gpio = require('rpi-gpio');
-var influx = require('./sendToInflux.js');
 var state = require('./state.js');
 var gpiop = gpio.promise;
 require('colors');
@@ -18,7 +17,7 @@ async function setup(){
 	gpio.on('change', function(channel, value) {
 		if(!changeLock){
 			if(channel == state.sensePin){
-				hande_PIR_data(channel,value);
+				hande_PIR_data(value);
 				setTimeout(()=>{changeLock = false;},changeTimeout);
 			}
 		}
@@ -27,13 +26,10 @@ async function setup(){
 }
 
 
-function hande_PIR_data(channel,value){
+function hande_PIR_data(value){
 		gpio.write(state.led_pin, value);
 		value = value ? 1 : 0;
-		state.occSense = value;
-		console.log('[Info] '.green + 'PIR State changed to: ' + value.toFixed().yellow);
-		var influxObj = {measurement: 'PIR', fields:{value:value} , tags:{site:'nate'}, date: Date.now()*1000*1000};
-		influx.writeInfluxBatch([influxObj]);
+		state.updateState('occSense',value);
 }
 
 

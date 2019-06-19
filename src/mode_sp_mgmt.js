@@ -2,11 +2,9 @@
 
 var state = require('./state.js');
 var gpio = require('rpi-gpio');
-var influx = require('./sendToInflux.js');
-var gpiop = gpio.promise;
 var screen = require('./screen_ui.js');
 var debug = 0;
-var colors = require('colors');
+require('colors');
 var changeTimeout = 100;
 var changeLock = false;
 var enableAuto = false;
@@ -44,9 +42,9 @@ async function setup(){
 
 function changeMode(){
     var index = state.modes.indexOf(state.mode); 
-    state.mode = state.modes[(index + 1) % state.modes.length];
-    state.mode = state.mode == 'Auto' && !enableAuto ? 'Off' : state.mode;
-    console.log('[Info] '.green + 'Mode changed: ' + state.mode.yellow);
+    var mode = state.modes[(index + 1) % state.modes.length];
+    mode = mode == 'Auto' && !enableAuto ? 'Off' : mode; // Auto not supported yet
+    state.updateState('mode',mode);
     state.saveState(); 
     screen.drawMode();
     screen.drawSP();
@@ -56,21 +54,22 @@ function changeMode(){
 function changeSetPoint(val){
     switch(state.mode){
         case 'Heat':
-            state.hsp += val;
-            state.hsp = state.hsp > state.hspLimit ? state.hspLimit : state.hsp; // Enforce High limit
-            state.hsp = state.hsp < state.cspLimit ? state.cspLimit : state.hsp; // Enforce Low Limit
+            var hsp = state.hsp + val;
+            hsp = hsp > state.hspLimit ? state.hspLimit : hsp; // Enforce High limit
+            hsp = hsp < state.cspLimit ? state.cspLimit : hsp; // Enforce Low Limit
+            state.updateState('hsp',hsp);
             state.activeSp = state.hsp;
             break;
         case 'Cool':
-            state.csp += val;
-            state.csp = state.csp < state.cspLimit ? state.cspLimit : state.csp;
-            state.csp = state.csp > state.hspLimit ? state.hspLimit : state.csp;
+            var csp = state.csp + val;
+            csp = csp < state.cspLimit ? state.cspLimit : csp;
+            csp = csp > state.hspLimit ? state.hspLimit : csp;
+            state.updateState('csp',csp);
             state.activeSp = state.csp;
             break;
         default:
             break; 
     }
-    state.mode != 'Off' ? console.log('[Info] '.green + ' User changed setpoint to ' + state.activeSp.toString().yellow) : null;
     state.saveState();
     screen.drawSP();
 

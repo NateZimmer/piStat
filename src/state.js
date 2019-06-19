@@ -36,6 +36,7 @@ state.controlDelay = 5;
 state.h1_enabled = true; 
 state.c1_enabled = true; 
 state.f1_enabled = true; 
+state.site_name = 'nate';
 
 
 // PINS
@@ -93,5 +94,37 @@ function loadState(){
     }
 }
 loadState();
+
+
+// Updates the state
+state.updateState = (prop,value)=>{
+    
+    if(state[prop] == undefined){
+        console.log('[ERROR] '.red + 'Invalid state property: ' + prop.yellow);
+        return;
+    }
+    var oldVal = state[prop]; 
+    state[prop] = value;
+    if( oldVal != value)
+    {
+        console.log('[Info] '.green + 'State: ' + prop.yellow + ' value has changed to: ' + value.toString().yellow);
+        var influxM = {measurement: prop, fields:{value:value} , tags:{site: state.site_name}, date: Date.now()*1000*1000};
+        influx.writeInfluxBatch([influxM]);
+    }
+}
+
+
+// Pumps up entire state
+state.uploadState = ()=>{
+    var influxArray = [];
+    for(var el in state){
+        if(typeof(state[el]) != 'function' && typeof(state[el]) != 'object'){
+            influxArray.push({measurement: el, fields:{value:state[el]} , tags:{site: state.site_name}, date: Date.now()*1000*1000});
+        }
+    }
+    influx.writeInfluxBatch([influxM]);
+}
+state.uploadState(); // Upload state upon boot
+
 
 module.exports = state;
