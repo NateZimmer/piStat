@@ -3,7 +3,8 @@
 
 var beautify = require("json-beautify");
 var fs = require('fs');
-var colors = require('colors');
+require('colors');
+var influx = require('./sendToInflux.js');
 var debug = false;
 
 var stateFileName = 'device.json'
@@ -124,7 +125,7 @@ state.uploadState = ()=>{
             influxArray.push({measurement: el, fields:{value:state[el]} , tags:{site: state.site_name}, date: Date.now()*1000*1000});
         }
     }
-    influx.writeInfluxBatch([influxM]);
+    influx.writeInfluxBatch(influxArray);
 }
 state.uploadState(); // Upload state upon boot
 
