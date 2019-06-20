@@ -3,7 +3,6 @@
 
 var state = require('./state.js');
 var gpio = require('rpi-gpio');
-var influx = require('./sendToInflux.js');
 var gpiop = gpio.promise;
 
 var control = {};
@@ -27,8 +26,8 @@ function createOutput(outObj){
 };
 
 control.outputs = [];
-var H1 = createOutput({name:'H1',affect:'Heat',pin:25,enabled:state.h1_enabled});
-var C1 = createOutput({name:'C1',affect:'Cool',pin:25,enabled:state.c1_enabled});
+var H1 = createOutput({name:'heat1',affect:'Heat',pin:state.h1Pin,enabled:state.h1_enabled});
+var C1 = createOutput({name:'cool1',affect:'Cool',pin:state.c1Pin,enabled:state.c1_enabled});
 
 
 function controlStateMachine(){
@@ -71,7 +70,7 @@ function controlStateMachine(){
 
     if(stateChanged != false){
         control.state = stateChanged;
-        console.log('[Control]'.purple + 'Changed state to: ' + control.state.yellow);
+        state.updateState('state',control.state)
     }
 }
 
@@ -146,7 +145,7 @@ function changeOutputState(output,turnOn){
     if(success){
         output.value = turnOn;
         gpiop.write(output.pin, output.value);
-        console.log('[Control]'.purple + 'Changed value of output' + output.name.yellow + ' to ' + output.value.toString().yellow);
+        state.updateState(output.name,output.value);
     }
 
     return success;

@@ -12,7 +12,7 @@ state.temperature = 70;
 state.temperature_cov = 0.1;
 state.temperature_period = 5000;
 state.humidity = 1;
-state.humidity_cov = 2;
+state.humidity_cov = 0.5;
 state.csp = 72;
 state.hsp = 72;
 state.cspLimit = 50;
@@ -35,9 +35,9 @@ state.controlTick = 1;
 state.controlDelay = 5;
 state.h1_enabled = true; 
 state.c1_enabled = true; 
-state.f1_enabled = true; 
+state.fan1_enabled = true; 
 state.site_name = 'nate';
-
+state.state = 'off';
 
 // PINS
 
@@ -46,6 +46,8 @@ state.downTempIO = 15; // GPIO 22
 state.modeChangeIO = 16; // GPIO 23
 state.led_pin = 11; // GPIO 17
 state.sensePin = 12; // GPIO 18
+state.c1Pin = 19; // GPIO10
+state.h1Pin = 21; // GPIO9
 
 // Functions  
 
