@@ -1,6 +1,5 @@
 const BME280 = require('bme280-sensor');
 var state = require('./state.js');
-var influx = require('./sendToInflux.js');
 var screen = require('./screen_ui.js');
 require('colors');
 

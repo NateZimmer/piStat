@@ -6,6 +6,7 @@ var fs = require('fs');
 require('colors');
 var influx = require('./sendToInflux.js');
 var debug = false;
+var bootTime = Date.now();
 
 var stateFileName = 'device.json'
 var state = {};
@@ -39,6 +40,7 @@ state.c1_enabled = true;
 state.fan1_enabled = true; 
 state.site_name = 'nate';
 state.state = 'off';
+state.runTime = 0;
 
 // PINS
 
@@ -49,6 +51,8 @@ state.led_pin = 11; // GPIO 17
 state.sensePin = 12; // GPIO 18
 state.c1Pin = 19; // GPIO10
 state.h1Pin = 21; // GPIO9
+state.cool1 = 0;
+state.heat1 = 0;
 
 // Functions  
 
@@ -129,9 +133,15 @@ state.uploadState = ()=>{
 }
 state.uploadState(); // Upload state upon boot
 
+// Update runtime every 20 minutes 
+setInterval(()=>{
+    var runTime = (Date.now() - bootTime)/(1000*60*60);
+    state.updateState('runTime',runTime);
+},1000*60*20);
+
 
 setInterval(()=>{
-    console.log('[State] '.orange + 'Cloud state update');
+    console.log('[State] '.blue + 'Cloud state update');
     state.uploadState();
 },1000*60*60*12); // Update state every 12 hours 
 

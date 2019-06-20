@@ -4,7 +4,7 @@
 var state = require('./state.js');
 var gpio = require('rpi-gpio');
 var gpiop = gpio.promise;
-
+require('colors');
 var control = {};
 control.state = 'Off';
 control.states = ['Off','Idle','Active','Satisfied']; 
@@ -15,9 +15,9 @@ var outputTemplate = {offStart:0,onStart:0,offTimeSat:1,onTimeSat:1,affect:'',va
 
 function createOutput(outObj){
     var obj = JSON.parse(JSON.stringify(outputTemplate));
-    obj.offStart = Date.now();
-    obj.onStart = Date.now();
-    for(var el of outObj){
+    obj.offStart = Date.now() - 5*60*1000; // Allow outputs to turn on at boot
+    obj.onStart = Date.now() - 5*60*1000; // Allow outputs to turn on at boot
+    for(var el in outObj){
         obj[el] = outObj[el];
     }
     gpio.setup(obj.pin, gpio.DIR_OUT);
@@ -47,6 +47,8 @@ function controlStateMachine(){
                 if(control.needed){
                     stateChanged = requestControlActive();
                     stateChanged = stateChanged ? 'Active' : stateChanged;
+                }else if(control.satisfied){
+                    stateChanged = 'Satisfied';
                 }
                 break;
     
@@ -108,14 +110,14 @@ function updateControlStatus(){
     var error = state.temperature - state.activeSp;
     if(state.mode == 'Heat'){
         // Goal: Have positive error
-        control.needed = error + controlDeadBand/2 < 0;
-        control.satisfied = error - controlDeadBand/2 > 0;
+        control.needed = error + state.controlDeadBand/2 < 0;
+        control.satisfied = error - state.controlDeadBand/2 > 0;
     }
 
     if(state.mode == 'Cool'){
         // Goal: Have negative error 
-        control.needed = error - controlDeadBand/2 > 0;
-        control.satisfied = error + controlDeadBand/2 < 0;
+        control.needed = error - state.controlDeadBand/2 > 0;
+        control.satisfied = error + state.controlDeadBand/2 < 0;
     }
 
 }
@@ -153,7 +155,7 @@ function changeOutputState(output,turnOn){
 
 
 setTimeout(()=>{
-    console.log('[Control]'.purple + 'Starting Control Loop');
+    console.log('[Control] '.magenta + 'Starting Control Loop');
     setInterval(()=>{
         controlStateMachine();
     },state.controlTick)
