@@ -130,4 +130,10 @@ state.uploadState = ()=>{
 state.uploadState(); // Upload state upon boot
 
 
+setInterval(()=>{
+    console.log('[State] '.orange + 'Cloud state update');
+    state.uploadState();
+},1000*60*60*12); // Update state every 12 hours 
+
+
 module.exports = state;
