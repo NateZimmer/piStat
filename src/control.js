@@ -156,7 +156,7 @@ function changeOutputState(output,turnOn){
 
 
 setTimeout(()=>{
-    console.log('[Control]'.magenta + 'Starting Control Loop');
+    console.log('[Control] '.magenta + 'Starting Control Loop');
     setInterval(()=>{
         controlStateMachine();
     },state.getProp('controlTick'))
