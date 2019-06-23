@@ -85,22 +85,22 @@ function drawTime(xpos,ypos){
 }
 
 async function drawTemp(){
-  var temp = state.temperature;
+  var temp = state.getProp('temperature');
   oled.centerTextWrite(font,tempY,temp.toFixed(1),3);
 }
 screen_ui.drawTemp = drawTemp;
 
 async function drawHumidity(){
-  var str = 'H:' + state.humidity.toFixed(0);
+  var str = 'H:' + state.getProp('humidity').toFixed(0);
   oled.setCursor(humidX,humidY);
   oled.writeString(font, 1, str , 1, true);
 }
 screen_ui.drawHumidity = drawHumidity;
 
 async function drawSP(){
-  var str = 'S:' + state.activeSp.toFixed(0);
+  var str = 'S:' + state.getProp('activeSp').toFixed(0);
   oled.setCursor(SpXLocation,SpYLocation);
-  if(state.mode != 'Off'){
+  if(state.getProp('mode') != 'Off'){
     oled.writeString(font, 1, str , 1, true);
   }else{
     oled.writeString(font, 1, '    ', 1, true);
@@ -109,7 +109,7 @@ async function drawSP(){
 screen_ui.drawSP = drawSP;
 
 function drawMode(){
-  var mode = state.mode;
+  var mode = state.getProp('mode');
   oled.setCursor(modeX,timeH);
   mode = mode == 'Off' ? 'Off ' : mode;
   oled.writeString(font, 1, mode , 1, true);

@@ -1,6 +1,5 @@
 const BME280 = require('bme280-sensor');
 var state = require('./state.js');
-var influx = require('./sendToInflux.js');
 var screen = require('./screen_ui.js');
 require('colors');
 
@@ -21,21 +20,21 @@ const readSensorData = () => {
       data.pressure_inHg = BME280.convertHectopascalToInchesOfMercury(data.pressure_hPa);
       
       debug ? console.log('[Data V]'.green + JSON.stringify(data)) : null;
-      if(Math.abs(state.temperature - data.temperature_F) > state.temperature_cov){
+      if(Math.abs(state.getProp('temperature') - data.temperature_F) > state.getProp('temperature_cov')){
         state.updateState('temperature',data.temperature_F);
         screen.drawTemp();
       }
 
-      if(Math.abs(state.humidity - data.humidity) > state.humidity_cov){
+      if(Math.abs(state.getProp('humidity') - data.humidity) > state.getProp('humidity_cov')){
         state.updateState('humidity',data.humidity);
         screen.drawHumidity();
       }
 
-      setTimeout(readSensorData, state.temperature_period);
+      setTimeout(readSensorData, state.getProp('temperature_period'));
     })
     .catch((err) => {
       console.log('[ERROR]'.red + `BME280 read error: ${err}`);
-      setTimeout(readSensorData, state.temperature_period);
+      setTimeout(readSensorData, state.getProp('temperature_period'));
     });
 };
 

@@ -10,22 +10,22 @@ var changeLock = false;
 var enableAuto = false;
 
 async function setup(){
-	gpio.setup(state.upTempIO, gpio.DIR_IN, gpio.EDGE_FALLING);
-    gpio.setup(state.downTempIO, gpio.DIR_IN, gpio.EDGE_FALLING);
-    gpio.setup(state.modeChangeIO, gpio.DIR_IN, gpio.EDGE_FALLING);
+	gpio.setup(state.getProp('upTempIO'), gpio.DIR_IN, gpio.EDGE_FALLING);
+    gpio.setup(state.getProp('downTempIO'), gpio.DIR_IN, gpio.EDGE_FALLING);
+    gpio.setup(state.getProp('modeChangeIO'), gpio.DIR_IN, gpio.EDGE_FALLING);
     
     gpio.on('change', function(channel, value) {
 
         if(!changeLock){
             changeLock = true;
             switch(channel){
-                case state.upTempIO:
+                case state.getProp('upTempIO'):
                     changeSetPoint(1)
                     break;
-                case state.downTempIO: 
+                case state.getProp('downTempIO'): 
                     changeSetPoint(-1);
                     break;
-                case state.modeChangeIO: 
+                case state.getProp('modeChangeIO'): 
                     changeMode();
                     break;
                 default:
@@ -41,10 +41,25 @@ async function setup(){
 
 
 function changeMode(){
-    var index = state.modes.indexOf(state.mode); 
-    var mode = state.modes[(index + 1) % state.modes.length];
-    mode = mode == 'Auto' && !enableAuto ? 'Off' : mode; // Auto not supported yet
-    state.updateState('mode',mode);
+
+    var newMode = null;
+    switch(state.getProp('mode')){
+        case 'Off':
+            newMode = 'Heat';
+            break;
+        case 'Heat':
+            newMode = 'Cool';
+            break;
+        case 'Cool':
+            newMode = enableAuto ? 'Auto' : 'Off';
+            break;
+        case 'Auto':
+            newMode = 'Off';
+        default:
+            newMode = 'Off';
+            break;
+    }
+    state.updateState('mode',newMode);
     state.saveState(); 
     screen.drawMode();
     screen.drawSP();
@@ -54,18 +69,18 @@ function changeMode(){
 function changeSetPoint(val){
     switch(state.mode){
         case 'Heat':
-            var hsp = state.hsp + val;
-            hsp = hsp > state.hspLimit ? state.hspLimit : hsp; // Enforce High limit
-            hsp = hsp < state.cspLimit ? state.cspLimit : hsp; // Enforce Low Limit
+            var hsp = state.getProp('hsp') + val;
+            hsp = hsp > state.getProp('hspLimit') ? state.getProp('hspLimit') : hsp; // Enforce High limit
+            hsp = hsp < state.getProp('cspLimit') ? state.getProp('cspLimit') : hsp; // Enforce Low Limit
             state.updateState('hsp',hsp);
-            state.activeSp = state.hsp;
+            state.updateState('activeSp',hsp);
             break;
         case 'Cool':
-            var csp = state.csp + val;
-            csp = csp < state.cspLimit ? state.cspLimit : csp;
-            csp = csp > state.hspLimit ? state.hspLimit : csp;
+            var csp = state.getProp('csp') + val;
+            csp = csp < state.getProp('cspLimit') ? state.getProp('cspLimit') : csp;
+            csp = csp > state.getProp('hspLimit') ? state.getProp('hspLimit') : csp;
             state.updateState('csp',csp);
-            state.activeSp = state.csp;
+            state.updateState('activeSp',csp);
             break;
         default:
             break; 

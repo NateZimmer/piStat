@@ -26,14 +26,14 @@ function createOutput(outObj){
 };
 
 control.outputs = [];
-var H1 = createOutput({name:'heat1',affect:'Heat',pin:state.h1Pin,enabled:state.h1_enabled});
-var C1 = createOutput({name:'cool1',affect:'Cool',pin:state.c1Pin,enabled:state.c1_enabled});
+var H1 = createOutput({name:'heat1',affect:'Heat',pin: state.getProp('h1Pin'),enabled: state.getProp('h1_enabled')});
+var C1 = createOutput({name:'cool1',affect:'Cool',pin: state.getProp('c1Pin'),enabled: state.getProp('c1_enabled')});
 
 
 function controlStateMachine(){
     updateControlStatus();
     var stateChanged = false;
-    if(state.mode == 'Off'){
+    if(state.getProp('mode') == 'Off'){
         requestOutputsOff();
         if(control.state != 'Off'){
             stateChanged = 'Off';
@@ -77,7 +77,7 @@ function controlStateMachine(){
 function requestControlActive(){
     var success = false;
     for(var output of control.outputs){
-        if(output.affect == state.mode){
+        if(output.affect == state.getProp('mode')){
             success = changeOutputState(output,1);
             if(success){
                 break;
@@ -101,21 +101,21 @@ function requestOutputsOff(){
 
 function updateControlStatus(){
 
-    if(state.mode == 'Off'){
-        return;
-    }
-
-    var error = state.temperature - state.activeSp;
-    if(state.mode == 'Heat'){
-        // Goal: Have positive error
-        control.needed = error + controlDeadBand/2 < 0;
-        control.satisfied = error - controlDeadBand/2 > 0;
-    }
-
-    if(state.mode == 'Cool'){
-        // Goal: Have negative error 
-        control.needed = error - controlDeadBand/2 > 0;
-        control.satisfied = error + controlDeadBand/2 < 0;
+    var error =  state.getProp('temperature') - state.getProp('activeSp');
+    switch( state.getProp('mode')){
+        case 'Off': 
+            break;
+        case 'Heat':
+            // Goal: Have positive error
+            control.needed = error + controlDeadBand/2 < 0;
+            control.satisfied = error - controlDeadBand/2 > 0;
+        case 'Cool':
+            // Goal: Have negative error 
+            control.needed = error - controlDeadBand/2 > 0;
+            control.satisfied = error + controlDeadBand/2 < 0;
+            break;
+        default:
+            break;
     }
 
 }
@@ -124,8 +124,8 @@ function updateControlStatus(){
 function changeOutputState(output,turnOn){
     var success = false;
     turnOn = turnOn ? 1 : 0;
-    var minOnTime = output.affect == 'Heat' ? state.heatMinOnTime : state.coolMinOnTime;
-    var minOffTime = output.affect == 'Heat' ? state.heatMinOffTime : state.coolMinOffTime;
+    var minOnTime = output.affect == 'Heat' ? state.getProp('heatMinOnTime') : state.getProp('coolMinOnTime');
+    var minOffTime = output.affect == 'Heat' ? state.getProp('heatMinOffTime') : state.getProp('coolMinOffTime');
     if(turnOn){
         if(output.offTimeSat){ // Safe to turn on 
             output.onStart = Date.now();
@@ -156,5 +156,5 @@ setTimeout(()=>{
     console.log('[Control]'.purple + 'Starting Control Loop');
     setInterval(()=>{
         controlStateMachine();
-    },state.controlTick)
-},state.controlDelay*1000)
+    },state.getProp('controlTick'))
+},state.getProp('controlDelay')*1000);

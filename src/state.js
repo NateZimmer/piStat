@@ -9,46 +9,48 @@ var debug = false;
 
 var stateFileName = 'device.json'
 var state = {};
-state.temperature = 70;
-state.temperature_cov = 0.1;
-state.temperature_period = 5000;
-state.humidity = 1;
-state.humidity_cov = 0.5;
-state.csp = 72;
-state.hsp = 72;
-state.cspLimit = 50;
-state.hspLimit = 99;
-state.modes = ['Off','Heat','Cool','Auto'];
-state.mode = state.modes[0]; 
-state.occStates = ['Home','Away'];
-state.occState = state.occStates[0];
-state.netSesne = 0;
-state.netSesneEn = 0;
-state.occSense = 0;
-state.occSenseEn = 0;
-state.activeSp = state.csp;
-state.heatMinOnTime = 30;
-state.heatMinOffTime = 30;
-state.coolMinOnTime = 60;
-state.coolMinOffTime = 60;
-state.controlDeadBand = 1;
-state.controlTick = 1;
-state.controlDelay = 5;
-state.h1_enabled = true; 
-state.c1_enabled = true; 
-state.fan1_enabled = true; 
-state.site_name = 'nate';
-state.state = 'off';
+var props = {};
+state.props = props;
+props.temperature = 70;
+props.temperature_cov = 0.1;
+props.temperature_period = 5000;
+props.humidity = 1;
+props.humidity_cov = 0.5;
+props.csp = 72;
+props.hsp = 72;
+props.cspLimit = 50;
+props.hspLimit = 99;
+props.modes = ['Off','Heat','Cool','Auto'];
+props.mode = props.modes[0]; 
+props.occStates = ['Home','Away'];
+props.occState = props.occStates[0];
+props.netSesne = 0;
+props.netSesneEn = 0;
+props.occSense = 0;
+props.occSenseEn = 0;
+props.activeSp = props.csp;
+props.heatMinOnTime = 30;
+props.heatMinOffTime = 30;
+props.coolMinOnTime = 60;
+props.coolMinOffTime = 60;
+props.controlDeadBand = 1;
+props.controlTick = 1;
+props.controlDelay = 5;
+props.h1_enabled = true; 
+props.c1_enabled = true; 
+props.fan1_enabled = true; 
+props.site_name = 'nate';
+props.state = 'off';
 
 // PINS
 
-state.upTempIO = 13; // GPIO 27
-state.downTempIO = 15; // GPIO 22
-state.modeChangeIO = 16; // GPIO 23
-state.led_pin = 11; // GPIO 17
-state.sensePin = 12; // GPIO 18
-state.c1Pin = 19; // GPIO10
-state.h1Pin = 21; // GPIO9
+props.upTempIO = 13; // GPIO 27
+props.downTempIO = 15; // GPIO 22
+props.modeChangeIO = 16; // GPIO 23
+props.led_pin = 11; // GPIO 17
+props.sensePin = 12; // GPIO 18
+props.c1Pin = 19; // GPIO10
+props.h1Pin = 21; // GPIO9
 
 // Functions  
 
@@ -102,12 +104,12 @@ loadState();
 // Updates the state
 state.updateState = (prop,value)=>{
     
-    if(state[prop] == undefined){
+    if(state.props[prop] == undefined){
         console.log('[ERROR] '.red + 'Invalid state property: ' + prop.yellow);
         return;
     }
-    var oldVal = state[prop]; 
-    state[prop] = value;
+    var oldVal = state.props[prop]; 
+    state.props[prop] = value;
     if( oldVal != value)
     {
         console.log('[Info] '.green + 'State: ' + prop.yellow + ' value has changed to: ' + value.toString().yellow);
@@ -120,15 +122,24 @@ state.updateState = (prop,value)=>{
 // Pumps up entire state
 state.uploadState = ()=>{
     var influxArray = [];
-    for(var el in state){
-        if(typeof(state[el]) != 'function' && typeof(state[el]) != 'object'){
-            influxArray.push({measurement: el, fields:{value:state[el]} , tags:{site: state.site_name}, date: Date.now()*1000*1000});
+    for(var el in state.props){
+        if(typeof(state.props[el]) != 'function' && typeof(state.props[el]) != 'object'){
+            influxArray.push({measurement: el, fields:{value:state.props[el]} , tags:{site: state.props.site_name}, date: Date.now()*1000*1000});
         }
     }
     influx.writeInfluxBatch(influxArray);
 }
 state.uploadState(); // Upload state upon boot
 
+
+state.getProp = (propName)=>{
+    return state.props[propName];
+}
+
+// Initially for no COV
+state.setProp = (propName,value)=>{
+    state.props[propName] = value;
+}
 
 setInterval(()=>{
     console.log('[State] '.orange + 'Cloud state update');
