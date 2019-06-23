@@ -6,6 +6,7 @@ var fs = require('fs');
 require('colors');
 var influx = require('./sendToInflux.js');
 var debug = false;
+var bootTime = Date.now();
 
 var stateFileName = 'device.json'
 var state = {};
@@ -51,6 +52,9 @@ props.led_pin = 11; // GPIO 17
 props.sensePin = 12; // GPIO 18
 props.c1Pin = 19; // GPIO10
 props.h1Pin = 21; // GPIO9
+props.cool1 = 0;
+props.heat1 = 0;
+
 
 // Functions  
 
@@ -142,9 +146,15 @@ state.setProp = (propName,value)=>{
 }
 
 setInterval(()=>{
-    console.log('[State] '.orange + 'Cloud state update');
+    console.log('[State] '.blue + 'Cloud state update');
     state.uploadState();
 },1000*60*60*12); // Update state every 12 hours 
 
+
+// Update runtime every 20 minutes 
+setInterval(()=>{
+    var runTime = (Date.now() - bootTime)/(1000*60*60);
+    state.updateState('runTime',runTime);
+},1000*60*20);
 
 module.exports = state;
