@@ -42,6 +42,7 @@ props.c1_enabled = true;
 props.fan1_enabled = true; 
 props.site_name = 'nate';
 props.state = 'off';
+props.runTime = 0;
 
 // PINS
 
