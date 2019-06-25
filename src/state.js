@@ -96,7 +96,7 @@ function loadState(){
             var syncRead = fs.readFileSync(stateFileName,'utf8');
             var parseState = JSON.parse(syncRead);
             for(var el in parseState.props){
-                state[el] = parseState[el];
+                state.props[el] = parseState[el];
             }
         }
     }catch(e){
