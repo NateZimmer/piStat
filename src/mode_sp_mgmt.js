@@ -1,6 +1,7 @@
 // License: MIT
 
 var state = require('./state.js');
+var s = state.props;
 var gpio = require('rpi-gpio');
 var screen = require('./screen_ui.js');
 var debug = 0;
@@ -16,7 +17,7 @@ async function setup(){
     
     gpio.on('change', function(channel, value) {
 
-        if(!changeLock){
+        if(!changeLock && (channel == s.upTempIO || channel == s.downTempIO || channel == s.modeChangeIO)){
             changeLock = true;
             switch(channel){
                 case state.getProp('upTempIO'):
@@ -67,7 +68,7 @@ function changeMode(){
 
 
 function changeSetPoint(val){
-    switch(state.mode){
+    switch(state.getProp('mode')){
         case 'Heat':
             var hsp = state.getProp('hsp') + val;
             hsp = hsp > state.getProp('hspLimit') ? state.getProp('hspLimit') : hsp; // Enforce High limit

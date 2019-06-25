@@ -22,7 +22,6 @@ async function setup(){
 			}
 		}
 	});
-	
 }
 
 

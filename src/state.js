@@ -96,7 +96,7 @@ function loadState(){
             var syncRead = fs.readFileSync(stateFileName,'utf8');
             var parseState = JSON.parse(syncRead);
             for(var el in parseState.props){
-                state.props[el] = parseState[el];
+                state.props[el] = parseState.props[el];
             }
         }
     }catch(e){
@@ -118,7 +118,7 @@ state.updateState = (prop,value)=>{
     if( oldVal != value)
     {
         console.log('[Info] '.green + 'State: ' + prop.yellow + ' value has changed to: ' + value.toString().yellow);
-        var influxM = {measurement: prop, fields:{value:value} , tags:{site: state.site_name}, date: Date.now()*1000*1000};
+        var influxM = {measurement: prop, fields:{value:value} , tags:{site: state.props.site_name}, date: Date.now()*1000*1000};
         influx.writeInfluxBatch([influxM]);
     }
 }

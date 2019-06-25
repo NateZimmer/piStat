@@ -2,6 +2,7 @@
 // License: MIT
 
 var state = require('./state.js');
+var s = state.props;
 var gpio = require('rpi-gpio');
 var gpiop = gpio.promise;
 require('colors');
@@ -26,8 +27,8 @@ function createOutput(outObj){
 };
 
 control.outputs = [];
-var H1 = createOutput({name:'heat1',affect:'Heat',pin: state.getProp('h1Pin'),enabled: state.getProp('h1_enabled')});
-var C1 = createOutput({name:'cool1',affect:'Cool',pin: state.getProp('c1Pin'),enabled: state.getProp('c1_enabled')});
+var H1 = createOutput({name:'heat1',affect:'Heat',pin: s.h1Pin,enabled: s.h1_enabled});
+var C1 = createOutput({name:'cool1',affect:'Cool',pin: s.c1Pin,enabled: s.c1_enabled});
 
 
 function controlStateMachine(){
@@ -92,7 +93,7 @@ function requestControlActive(){
 function requestOutputsOff(){
     var success = true;
     for(var output of control.outputs){
-        if(output.value){
+        if(s[output.name]){
             changeOutputState(output,0);
             success = false;
         }   
@@ -103,15 +104,16 @@ function requestOutputsOff(){
 
 function updateControlStatus(){
 
-    var error =  state.getProp('temperature') - state.getProp('activeSp');
-    var controlDeadBand = state.getProp('controlDeadBand');
-    switch( state.getProp('mode')){
+    var error =  s.temperature - s.activeSp;
+    var controlDeadBand = s.controlDeadBand;
+    switch(state.getProp('mode')){
         case 'Off': 
             break;
         case 'Heat':
             // Goal: Have positive error
             control.needed = error + controlDeadBand/2 < 0;
             control.satisfied = error - controlDeadBand/2 > 0;
+            break;
         case 'Cool':
             // Goal: Have negative error 
             control.needed = error - controlDeadBand/2 > 0;
@@ -127,8 +129,8 @@ function updateControlStatus(){
 function changeOutputState(output,turnOn){
     var success = false;
     turnOn = turnOn ? 1 : 0;
-    var minOnTime = output.affect == 'Heat' ? state.getProp('heatMinOnTime') : state.getProp('coolMinOnTime');
-    var minOffTime = output.affect == 'Heat' ? state.getProp('heatMinOffTime') : state.getProp('coolMinOffTime');
+    var minOnTime = output.affect == 'Heat' ? s.heatMinOnTime : s.coolMinOnTime;
+    var minOffTime = output.affect == 'Heat' ? s.heatMinOffTime : s.coolMinOffTime;
     if(turnOn){
         if(output.offTimeSat){ // Safe to turn on 
             output.onStart = Date.now();
@@ -159,5 +161,5 @@ setTimeout(()=>{
     console.log('[Control] '.magenta + 'Starting Control Loop');
     setInterval(()=>{
         controlStateMachine();
-    },state.getProp('controlTick'))
-},state.getProp('controlDelay')*1000);
+    },s.controlTick)
+},s.controlDelay*1000);
