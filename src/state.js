@@ -98,6 +98,7 @@ function loadState(){
             for(var el in parseState.props){
                 state.props[el] = parseState.props[el];
             }
+            state.saveState(); 
         }
     }catch(e){
         console.log('[Error]'.red,e);

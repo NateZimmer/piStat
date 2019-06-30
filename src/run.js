@@ -7,3 +7,4 @@ require('./mode_sp_mgmt.js');
 require('./pir.js');
 require('./temperature.js');
 require('./control.js');
+require('./oat.js')
