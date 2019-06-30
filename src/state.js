@@ -43,6 +43,10 @@ props.fan1_enabled = true;
 props.site_name = 'nate';
 props.state = 'off';
 props.runTime = 0;
+props.latitude = 0;
+props.longitude = 0;
+props.darkSkyKey = 'null';
+props.outdoorAirTemperature = 72;
 
 // PINS
 
@@ -98,6 +102,7 @@ function loadState(){
             for(var el in parseState.props){
                 state.props[el] = parseState.props[el];
             }
+            state.saveState();
         }
     }catch(e){
         console.log('[Error]'.red,e);
