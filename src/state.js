@@ -102,7 +102,11 @@ function loadState(){
             for(var el in parseState.props){
                 state.props[el] = parseState.props[el];
             }
+<<<<<<< HEAD
             state.saveState();
+=======
+            state.saveState(); 
+>>>>>>> 51734b1aaa381618c043aa5d0e12025a993ba3e3
         }
     }catch(e){
         console.log('[Error]'.red,e);
