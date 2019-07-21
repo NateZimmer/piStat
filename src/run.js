@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 // Entry for Stat
 // License: MIT
 

@@ -7,7 +7,7 @@ require('colors');
 var debug = 0;
 const options = {
   i2cBusNo   : 1, // defaults to 1
-  i2cAddress : 0x77 // defaults to 0x77
+  i2cAddress : 0x76 // defaults to 0x77
 };
 
 const bme280 = new BME280(options);
