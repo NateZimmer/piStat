@@ -46,6 +46,7 @@ function getNetworkObjs(){
 }
 os_lib.getNetworkObjs = getNetworkObjs;
 
+
 function pingIP(ipTemp){
     ping.sys.probe(ipTemp, function(isAlive){
         var msg = isAlive ? 'host ' + ipTemp + ' is alive' : 'host ' + ipTemp + ' is dead';
