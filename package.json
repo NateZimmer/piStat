@@ -1,5 +1,5 @@
 {
-  "name": "pisense",
+  "name": "pi_thermostat",
   "version": "1.0.0",
   "description": "RaspPi data collection",
   "main": "index.js",
@@ -18,5 +18,9 @@
     "ping": "^0.2.2",
     "public-ip": "^3.1.0",
     "rpi-gpio": "^2.1.3"
+  },
+  "devDependencies": {
+    "mocha": "^6.2.0",
+    "sinon": "^7.3.2"
   }
 }
