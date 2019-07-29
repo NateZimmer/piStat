@@ -1,17 +1,6 @@
-# Welcome to MkDocs
+# PI Stat
 
-For full documentation visit [mkdocs.org](https://mkdocs.org).
+***An affordable thermostat for engineers by engineers.*** 
 
-## Commands
+PI Stat is a 'cloudless' open source smart thermostat project written in Node JS and offers a powerful data gathering and visualization system. This ecosystem is designed to run on low cost (sub 50 USD) hardware. 
 
-* `mkdocs new [dir-name]` - Create a new project.
-* `mkdocs serve` - Start the live-reloading docs server.
-* `mkdocs build` - Build the documentation site.
-* `mkdocs help` - Print this help message.
-
-## Project layout
-
-    mkdocs.yml    # The configuration file.
-    docs/
-        index.md  # The documentation homepage.
-        ...       # Other markdown pages, images and other files.
