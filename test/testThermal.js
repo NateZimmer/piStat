@@ -1,14 +1,15 @@
 // Thermal Test
 // License: MIT
 
-var thermal = require('/models/thermal.js');
+var thermal = require('./models/thermal.js');
 var db_control = require('./controllers/dead_band_controller.js');
 var fs = require('fs');
+var svg_plot = require('svg-plot');
 
 var myHouse = new thermal({
-    gain:10,
+    gain:25,
     temperature: 60,
-    dt: 1,
+    dt: 10,
     oat: 50,
     time_constant: 3600
 });
@@ -20,14 +21,15 @@ var myControl = new db_control({
 })
 
 
-var simTime = 90001;
+var simTime = 9001;
 
 function testModel(controller,model){
     
-    var results = [['On','Temperature', 'Setpoint']]
+    var results = [['Time','On','Temperature', 'Setpoint']]
     
-    for(var i = 0; i < simTime; i++){
-        results.push([controller.on, model.temperature,model.setpoint]);
+    for(var i = 0; i < Math.round(simTime/model.dt); i++){
+        var onVal = controller.on ? 68:63; // For plotting purposes
+        results.push([i.toFixed()*model.dt,onVal, model.temperature,controller.setpoint]);
         model.step(controller.on);
         controller.control(model.temperature);        
     }
@@ -42,8 +44,11 @@ function runTest(fileName){
         str = str + row.join(',') + '\r\n'; 
     }
     try{
-        fs.writeFileSync(fileName,'results/db_thermal_test.txt');
+        svg_plot.plot(str,'results/' + fileName,'Time');
+        fs.writeFileSync('results/' + fileName + '.csv',str);
     }catch(e){
         console.log(e);
     }
 }
+
+runTest('testThermal');

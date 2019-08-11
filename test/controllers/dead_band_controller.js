@@ -4,7 +4,7 @@
 
 function control(control_var){
     var error = control_var - this.setpoint; 
-    error = this.mode == 'Positive' ? error : -1*error;
+    error = this.mode == 'Positive' ? -1*error : error;
     this.on = error > this.band/2 ? true : this.on; // Is control band exceeded?  
     this.on = error < -1*this.band/2 ? false : this.on; // Is the control band satisfied?
 }

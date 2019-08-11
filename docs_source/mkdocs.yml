@@ -6,9 +6,11 @@ dev_addr: 127.0.0.1:8005
 nav:
 - Introduction: 
     - Home: index.md
-    - Test: Thermal/Thermal.md
+- Theory:
+    - Thermal Model: Thermal/Thermal.md
 
-
+use_directory_urls: false
+edit_uri: 'tree/master/docs_source/docs'
 
 theme:
     name: readthedocs

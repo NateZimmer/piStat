@@ -61,23 +61,32 @@ Using these assumptions, the code for a simple thermal model is as follows:
 
 ```js
 
+function thermal_step(u){
+    this.delta =  this.gain*this.dt*u/this.time_constant + this.delta*(1 - this.dt/this.time_constant) ;
+    this.temperature = this.delta + this.oat;
+}
+
+
 function simple_thermal(obj){
-	this.gain = obj.gain;
-	this.temp = obj.temp;
-	this.dt = obj.dt;
-	this.oat = obj.oat;
-	this.time_constant = obj.time_constant;
+    this.gain = obj.gain;
+    this.temperature = obj.temperature;
+    this.dt = obj.dt;
+    this.oat = obj.oat;
+    this.time_constant = obj.time_constant;
+    this.step = thermal_step;
+    this.delta = this.temperature - this.oat;
 }
-
-function thermal_step(model,u){
-	model.temp =  model.gain*model.dt*u/model.time_constant + model.temp*(1 - model.dt/model.time_constant) + model.oat; 
-}
-
-
-var myHouse = new simple_thermal({
-	gain: 10
-	temp: 70
-	oat: 60
-});
 
 ```
+
+Using this model in conjunction with a controller, one can observe the following: 
+
+
+<p align='center'>
+
+<img src='testThermal.svg'>
+
+</p>
+
+The code that was used to generate the above image is located in [here](https://github.com/NateZimmer/piStat/tree/master/test/). A simple deadband controller was used as the controller. 
+
