@@ -1,6 +1,6 @@
 # PI Stat
 
-![https://travis-ci.com/NateZimmer/piStat](https://api.travis-ci.com/NateZimmer/piStat.svg?branch=master)
+[![](https://api.travis-ci.com/NateZimmer/piStat.svg?branch=master)](https://travis-ci.com/NateZimmer/piStat)
 
 
 ***An affordable thermostat for engineers by engineers.*** 
