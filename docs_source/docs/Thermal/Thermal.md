@@ -7,7 +7,8 @@
 A first order ordinary differential equation(ODE) is an optimal model for many natural systems which have a "first order" response. Using Laplace notation, this ODE is represented by the following equation:
 
 $$
-H(s) = \frac{a}{RC \cdot s+1} $$
+H(s) = \frac{a}{RC \cdot s+1} 
+$$
 
 In the above equation, $a$ defined the steady-state amplitude of this ODE and $RC$ is the [RC time constant](https://en.wikipedia.org/wiki/RC_time_constant). Discretization of this model allows for simple calculation.
 
