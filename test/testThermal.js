@@ -6,6 +6,7 @@ var db_control = require('./controllers/dead_band_controller.js');
 var fs = require('fs');
 var svg_plot = require('svg-plot');
 
+
 var myHouse = new thermal({
     gain:25,
     temperature: 60,

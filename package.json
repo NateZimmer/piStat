@@ -4,7 +4,8 @@
   "description": "RaspPi data collection",
   "main": "index.js",
   "scripts": {
-    "test": "mocha test/tests/*.js"
+    "test": "mocha test/tests/*.js",
+    "only-test": "mocha --inspect-brk test/tests/testThermal.js"
   },
   "author": "",
   "license": "ISC",
