@@ -85,9 +85,13 @@ os_lib.runCommand = runCommand;
 
 
 async function get_ssid(interface){
-    var result = await runCommand('iwconfig | grep ' + interface);
-    result = result.match(/ESSID:".*"/g);
-    result = result[0].split('"')[1]
+    var result = undefined;
+    try{
+        result = await runCommand('iwconfig | grep ' + interface);
+        result = result.match(/ESSID:".*"/g);
+        result = result[0].split('"')[1]
+    }catch(e){
+    }
     return result;
 }
 os_lib.get_ssid = get_ssid;

@@ -5,6 +5,7 @@ var beautify = require("json-beautify");
 var fs = require('fs');
 require('colors');
 var influx = require('./sendToInflux.js');
+var log = require('./log');
 var debug = false;
 var bootTime = Date.now();
 
@@ -22,7 +23,7 @@ props.hsp = 72;
 props.cspLimit = 50;
 props.hspLimit = 99;
 props.modes = ['Off','Heat','Cool','Auto'];
-props.mode = props.modes[0]; 
+props.mode = {value: props.modes[0],values:['Off','Heat','Cool','Auto']}; 
 props.occStates = ['Home','Away'];
 props.occState = props.occStates[0];
 props.netSesne = 0;
@@ -41,7 +42,7 @@ props.h1_enabled = true;
 props.c1_enabled = true; 
 props.fan1_enabled = true; 
 props.site_name = 'nate';
-props.state = 'off';
+props.state = {value:'Off', values:['Off','Idle','Active','Satisfied']};
 props.runTime = 0;
 props.latitude = 0;
 props.longitude = 0;
@@ -59,7 +60,7 @@ props.c1Pin = 19; // GPIO10
 props.h1Pin = 21; // GPIO9
 props.cool1 = 0;
 props.heat1 = 0;
-
+props.skipStateLoad = false;
 
 // Functions  
 
@@ -93,7 +94,7 @@ state.saveState = ()=>{
 
 function loadState(){
     try{
-        if( !fs.existsSync('./' +stateFileName) ){
+        if( !fs.existsSync('./' +stateFileName) || props.skipStateLoad ){
             console.log('[Info] '.green + 'Creating ' + stateFileName + ' state file.')
             state.saveState();
         }else{
@@ -111,6 +112,32 @@ function loadState(){
 loadState();
 
 
+// Initially for no COV
+state.setProp = (propName,value)=>{
+    if(typeof(state.props[propName]) == 'object'){
+        state.props[propName].value = value;
+    }else{
+        state.props[propName] = value;
+    }
+}
+
+
+state.getProp = (propName)=>{
+    return typeof(state.props[propName])=='object' ? state.props[propName].value : state.props[propName];
+}
+
+
+state.getIndex = (propName)=>{
+    var returnVal = 'Null';
+    try{
+        returnVal = typeof(state.props[propName])=='object' ? state.props[propName].values.indexOf(state.props[propName].value) : 'Null'
+    }catch(e){
+        console.log(e);
+    }
+    return returnVal;
+}
+
+
 // Updates the state
 state.updateState = (prop,value)=>{
     
@@ -118,12 +145,13 @@ state.updateState = (prop,value)=>{
         console.log('[ERROR] '.red + 'Invalid state property: ' + prop.yellow);
         return;
     }
-    var oldVal = state.props[prop]; 
-    state.props[prop] = value;
+    var oldVal = state.getProp(prop); 
+    state.setProp(prop,value);
     if( oldVal != value)
     {
-        console.log('[Info] '.green + 'State: ' + prop.yellow + ' value has changed to: ' + value.toString().yellow);
-        var influxM = {measurement: prop, fields:{value:value} , tags:{site: state.props.site_name}, date: Date.now()*1000*1000};
+        var val = typeof(value) == 'string' ? state.getIndex(prop) : value;
+        log.cov(prop,val);
+        var influxM = {measurement: prop, fields:{value:val} , tags:{site: state.props.site_name}, date: Date.now()*1000*1000};
         influx.writeInfluxBatch([influxM]);
     }
 }
@@ -142,14 +170,6 @@ state.uploadState = ()=>{
 state.uploadState(); // Upload state upon boot
 
 
-state.getProp = (propName)=>{
-    return state.props[propName];
-}
-
-// Initially for no COV
-state.setProp = (propName,value)=>{
-    state.props[propName] = value;
-}
 
 setInterval(()=>{
     console.log('[State] '.blue + 'Cloud state update');

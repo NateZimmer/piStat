@@ -1,6 +1,7 @@
 const BME280 = require('bme280-sensor');
 var state = require('./state.js');
-var screen = require('./screen_ui.js');
+var sense_ui = require('./sense_ui.js');
+var log = require('./log')
 require('colors');
 
 
@@ -10,32 +11,29 @@ const options = {
   i2cAddress : 0x76 // defaults to 0x77
 };
 
+var temp = {};
+
+
 const bme280 = new BME280(options);
 
 const readSensorData = () => {
-  bme280.readSensorData()
+  setInterval(()=>{
+
+    bme280.readSensorData()
     .then((data) => {
 
-      data.temperature_F = BME280.convertCelciusToFahrenheit(data.temperature_C);
-      data.pressure_inHg = BME280.convertHectopascalToInchesOfMercury(data.pressure_hPa);
-      
-      debug ? console.log('[Data V]'.green + JSON.stringify(data)) : null;
-      if(Math.abs(state.getProp('temperature') - data.temperature_F) > state.getProp('temperature_cov')){
-        state.updateState('temperature',data.temperature_F);
-        screen.drawTemp();
-      }
-
-      if(Math.abs(state.getProp('humidity') - data.humidity) > state.getProp('humidity_cov')){
-        state.updateState('humidity',data.humidity);
-        screen.drawHumidity();
-      }
-
-      setTimeout(readSensorData, state.getProp('temperature_period'));
+      data.temperature_F = (9/5) * data.temperature_C + 32; // Convert C to F
+      log.info( JSON.stringify(data),undefined,log.VERBOSE);
+      sense_ui.handle_temp_update(data.temperature_F);
+      sense_ui.handle_humidity_update(data.humidity);      
     })
     .catch((err) => {
       console.log('[ERROR]'.red + `BME280 read error: ${err}`);
-      setTimeout(readSensorData, state.getProp('temperature_period'));
     });
+
+  },state.getProp('temperature_period'));
+
+  
 };
 
 // Initialize the BME280 sensor
@@ -46,3 +44,7 @@ bme280.init()
     readSensorData();
   })
   .catch((err) => console.log('[ERROR]'.red +`BME280 initialization failed: ${err} `));
+
+temp.bme280 = bme280;
+
+module.exports = temp;

@@ -38,10 +38,16 @@ screen_lib.extend(oled);
 
 async function drawNetInfo(xPos,yPos,interface){
   var ssid = await os_lib.get_ssid(interface);
-  ssid = ssid.substr(0,15);
-  if(ssid ==''){
+  
+  if(ssid){
+    ssid = ssid.substr(0,15);
+    if(ssid ==''){
+      console.log('[Warning]:No SSID found');
+    }
+  }else{
     console.log('[Warning]:No SSID found');
   }
+
   var nets = os_lib.getNetworkObjs();
   var ipStr = '';
   for(var net of nets){

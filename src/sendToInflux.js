@@ -3,9 +3,10 @@
 
 var fs = require('fs');
 require('colors');
+var path = require('path');
 var debug = 0;
 
-var influxConfigPath = 'influxConfig.json';
+var influxConfigPath = path.resolve(__dirname,'influxConfig.json');
 var config = JSON.parse(fs.readFileSync(influxConfigPath).toString()); // Read Database Config File 
 
 String.prototype.replaceAll = function(search, replacement) {
@@ -32,18 +33,20 @@ var optionsInflux = {
     }
 };  
 
+var influx = {};
 
 var sendN = 500; // Batch size to send to influx. Rest API can only handle so much
 var ObjArray = [];
-module.exports.ObjArray = ObjArray; // Expose Object Array  
-module.exports.sendingData = false;
+influx.ObjArray = ObjArray; // Expose Object Array  
+influx.sendingData = false;
+influx.disable = false;
 
 // Use this to send to a different database than the default
 function updateDatabaseName(databaseName){
     var pathText = config.nginxURL + '/write?db=' + databaseName + '&u=' + config.influxUser+ '&p=' + config.influxPassword;
     optionsInflux.path =  pathText;
 }
-module.exports.updateDatabaseName = updateDatabaseName; 
+influx.updateDatabaseName = updateDatabaseName; 
 updateDatabaseName(ConfigDB);
 
 var lastStringLength = 0;
@@ -54,6 +57,10 @@ function dlog(msg){
 
 async function writeInfluxBatch(COVArray){
     return new Promise(async function (resolve, reject) {
+        if(influx.disable){
+            resolve('Done');
+            return;
+        }
         var ObjArray = JSON.parse(JSON.stringify(COVArray)); // Deep object array clone 
         var covCount = ObjArray.length;
         var batchCount = Math.floor(covCount/sendN)+1;
@@ -79,7 +86,7 @@ async function writeInfluxBatch(COVArray){
             }
             else{
                 dlog('Finished sending messages to influx db!');
-                module.exports.sendingData = false;
+                influx.sendingData = false;
                 break;
             }
             if(res.success == false){
@@ -90,7 +97,7 @@ async function writeInfluxBatch(COVArray){
         resolve('Done');
     });
 }
-module.exports.writeInfluxBatch = writeInfluxBatch;
+influx.writeInfluxBatch = writeInfluxBatch;
 
 
 // influxTagSanitize
@@ -168,3 +175,5 @@ function writeInfluxPoints(objArray){
 
     });
 }
+
+module.exports = influx;
