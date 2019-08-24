@@ -1,4 +1,5 @@
 var assert = require('assert');
+require('../mocks/mocks');
 
 describe('Mode', function() {
   describe('Mode Init', function() {

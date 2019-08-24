@@ -5,6 +5,7 @@ var state = require('./state.js');
 var s = state.props;
 require('colors');
 const https = require('https');
+var timer = require('./timer.js');
 var debug = 0;
 
 
@@ -67,7 +68,7 @@ function updateOAT()
 function start_OAT_sampling(){
     if( OAT_ready() ){
         updateOAT();
-        setInterval(()=>{
+        timer.setInterval(()=>{
             updateOAT();
         },60*60*1000)
     }

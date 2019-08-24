@@ -1,4 +1,5 @@
 var assert = require('assert');
+require('../mocks/mocks');
 
 describe('State', function() {
   describe('State Init', function() {

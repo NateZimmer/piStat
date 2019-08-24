@@ -1,4 +1,5 @@
 var assert = require('assert');
+require('../mocks/mocks');
 
 describe('Full System', function() {
   describe('Load', function() {

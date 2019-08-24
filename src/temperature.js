@@ -1,6 +1,7 @@
 const BME280 = require('bme280-sensor');
 var state = require('./state.js');
 var sense_ui = require('./sense_ui.js');
+var timer = require('./timer')
 var log = require('./log')
 require('colors');
 
@@ -17,7 +18,7 @@ var temp = {};
 const bme280 = new BME280(options);
 
 const readSensorData = () => {
-  setInterval(()=>{
+  timer.setInterval(()=>{
 
     bme280.readSensorData()
     .then((data) => {

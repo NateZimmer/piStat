@@ -1,4 +1,5 @@
 var assert = require('assert');
+require('../mocks/mocks');
 
 describe('PIR', function() {
   describe('PIR Init', function() {

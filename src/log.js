@@ -1,7 +1,7 @@
 // License: MIT
 
 require('colors');
-
+var timer = require('./timer');
 
 var log = {
     ERRORS_ONLY:0,
@@ -13,11 +13,11 @@ log.minLogLevel = 1
 
 
 var t = () =>{
-    var now = new Date();
+    var now = new timer.Date();
     return '   ' + now.toLocaleDateString().cyan +' ' + now.toLocaleTimeString().cyan;
 }
 
-var d = () =>{return ',\t' + (Date.now()/1000).toFixed(3).cyan;}
+var d = () =>{return ',\t' + (timer.Date.now()/1000).toFixed(3).cyan;}
 
 log.info = (logStr,val,logLevel)=>{
     var valStr = typeof(val) == 'number' ?  val.toFixed(3) : ''; 
@@ -28,10 +28,11 @@ log.info = (logStr,val,logLevel)=>{
 }
 
 
-log.cov = (point,val)=>{
+log.cov = (point,val,extra)=>{
     var valStr = typeof(val) == 'number' ?  val.toFixed(3) : typeof(val)=='string' ? val: ''; 
+    var extraStr = extra != null ? (',\t ' + extra) : ',';
     if(log.minLogLevel>=log.MINIMAL){
-        console.log('[COV],\t'.magenta + point.green + ',\t' + valStr.yellow + d());
+        console.log('[COV],\t'.magenta + point.green + ',\t' + valStr.yellow + d() + extraStr);
     }
 }
 

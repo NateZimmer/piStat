@@ -5,6 +5,7 @@ var s = state.props;
 var gpio = require('rpi-gpio');
 var screen = require('./screen_ui.js');
 var log = require('./log.js');
+var timer = require('./timer.js');
 var debug = 0;
 require('colors');
 var changeTimeout = 100;
@@ -33,7 +34,7 @@ async function setup(){
                 default:
                         break;
             }
-            setTimeout(()=>{changeLock = false;},changeTimeout);
+            timer.setTimeout(()=>{changeLock = false;},changeTimeout);
             debug ? log.info(`Changed State Channel:${channel}, Value: ${value}`) : null;
         }
 

@@ -9,11 +9,6 @@ var debug = false; // Prints debug messages
 
 var os_lib = {};
 
-function sleep(ms){
-    return new Promise(resolve=>{
-        setTimeout(resolve,ms)
-    })
-}
 
 var cfg = {
     extra: ['-c', '1','-w','1'] // Linux only 

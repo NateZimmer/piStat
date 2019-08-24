@@ -9,6 +9,7 @@ var font = require('oled-font-5x7');
 var os_lib = require('./os_lib.js');
 var u = require('./util.js');
 var state = require('./state.js');
+var timer = require('./timer');
 var debug = 0;
 var screen_ui = {};
 
@@ -143,8 +144,8 @@ async function drawUI(){
 }
 drawUI();
 
-setTimeout(()=>{
-  setInterval(()=>{
+timer.setTimeout(()=>{
+  timer.setInterval(()=>{
     drawTime(0,timeH);
     debug ? console.log('Updating Time') : null;
   },60*1000)

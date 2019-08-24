@@ -1,6 +1,7 @@
 // Thermal Test
 // License: MIT
 
+require('../mocks/mocks');
 var thermal = require('../models/thermal.js');
 var db_control = require('../controllers/dead_band_controller.js');
 var fs = require('fs');

@@ -7,6 +7,11 @@ function thermal_step(u){
     this.temperature = this.delta + this.oat;
 }
 
+function reset(temperature){
+    this.temperature = temperature;
+    this.delta = this.temperature - this.oat;
+}
+
 
 function simple_thermal(obj){
     this.gain = obj.gain;
@@ -16,6 +21,7 @@ function simple_thermal(obj){
     this.time_constant = obj.time_constant;
     this.step = thermal_step;
     this.delta = this.temperature - this.oat;
+    this.reset = reset;
 }
 
 module.exports = simple_thermal;

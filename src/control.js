@@ -5,6 +5,7 @@ var state = require('./state.js');
 var s = state.props;
 var gpio = require('rpi-gpio');
 var gpiop = gpio.promise;
+var timer = require('./timer');
 require('colors');
 var control = {};
 control.state = 'Off';
@@ -16,8 +17,8 @@ var outputTemplate = {offStart:0,onStart:0,offTimeSat:1,onTimeSat:1,affect:'',va
 
 function createOutput(outObj){
     var obj = JSON.parse(JSON.stringify(outputTemplate));
-    obj.offStart = Date.now() - 5*60*1000; // Allow outputs to turn on at boot
-    obj.onStart = Date.now() - 5*60*1000; // Allow outputs to turn on at boot
+    obj.offStart = timer.Date.now() - 5*60*1000; // Allow outputs to turn on at boot
+    obj.onStart = timer.Date.now() - 5*60*1000; // Allow outputs to turn on at boot
     for(var el in outObj){
         obj[el] = outObj[el];
     }
@@ -27,8 +28,13 @@ function createOutput(outObj){
 };
 
 control.outputs = [];
-var H1 = createOutput({name:'heat1',affect:'Heat',pin: s.h1Pin,enabled: s.h1_enabled});
-var C1 = createOutput({name:'cool1',affect:'Cool',pin: s.c1Pin,enabled: s.c1_enabled});
+
+control.createOutputs = ()=>{
+    control.outputs = [];
+    var H1 = createOutput({name:'heat1',affect:'Heat',pin: s.h1Pin,enabled: s.h1_enabled});
+    var C1 = createOutput({name:'cool1',affect:'Cool',pin: s.c1Pin,enabled: s.c1_enabled});
+}
+control.createOutputs();
 
 
 function controlStateMachine(){
@@ -93,10 +99,10 @@ function requestControlActive(){
 function requestOutputsOff(){
     var success = true;
     for(var output of control.outputs){
-        if(s[output.name]){
+        if(state.getProp(output.name)){ // if output is on 
             changeOutputState(output,0);
             success = false;
-        }   
+        }
     }
     return success;
 }
@@ -104,8 +110,8 @@ function requestOutputsOff(){
 
 function updateControlStatus(){
 
-    var error =  s.temperature - s.activeSp;
-    var controlDeadBand = s.controlDeadBand;
+    var error =  state.getProp('temperature') - state.getProp('activeSp');
+    var controlDeadBand = state.getProp('controlDeadBand');
     switch(state.getProp('mode')){
         case 'Off': 
             break;
@@ -129,20 +135,20 @@ function updateControlStatus(){
 function changeOutputState(output,turnOn){
     var success = false;
     turnOn = turnOn ? 1 : 0;
-    var minOnTime = output.affect == 'Heat' ? s.heatMinOnTime : s.coolMinOnTime;
-    var minOffTime = output.affect == 'Heat' ? s.heatMinOffTime : s.coolMinOffTime;
+    var minOnTime = output.affect == 'Heat' ? state.getProp('heatMinOnTime')  : state.getProp('coolMinOnTime');
+    var minOffTime = output.affect == 'Heat' ? state.getProp('heatMinOffTime') : state.getProp('coolMinOffTime');
     if(turnOn){
         if(output.offTimeSat){ // Safe to turn on 
-            output.onStart = Date.now();
+            output.onStart = timer.Date.now();
             output.onTimeSat = false;
-            setTimeout(()=>{output.onTimeSat = true},minOnTime*1000);
+            timer.setTimeout(()=>{output.onTimeSat = true},minOnTime*1000);
             success = true;
         }
     }else{
         if(output.onTimeSat){ // Safe to turn off 
-            output.offStart = Date.now();
+            output.offStart = timer.Date.now();
             output.offTimeSat = false;
-            setTimeout(()=>{output.offTimeSat = true},minOffTime*1000);
+            timer.setTimeout(()=>{output.offTimeSat = true},minOffTime*1000);
             success = true; 
         }
     }
@@ -156,10 +162,12 @@ function changeOutputState(output,turnOn){
     return success;
 }
 
-
-setTimeout(()=>{
+console.log('Control loop init')
+timer.setTimeout(()=>{
     console.log('[Control] '.magenta + 'Starting Control Loop');
-    setInterval(()=>{
+    timer.setInterval(()=>{
         controlStateMachine();
     },s.controlTick)
 },s.controlDelay*1000);
+
+module.exports = control;

@@ -3,6 +3,7 @@
 
 var gpio = require('rpi-gpio');
 var state = require('./state.js');
+var timer = require('./timer');
 var gpiop = gpio.promise;
 require('colors');
 
@@ -18,7 +19,7 @@ async function setup(){
 		if(!changeLock){
 			if(channel == state.getProp('sensePin')){
 				hande_PIR_data(value);
-				setTimeout(()=>{changeLock = false;},changeTimeout);
+				timer.setTimeout(()=>{changeLock = false;},changeTimeout);
 			}
 		}
 	});

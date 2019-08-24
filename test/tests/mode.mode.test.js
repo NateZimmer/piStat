@@ -1,5 +1,5 @@
 var assert = require('assert');
-var fs = require('fs');
+var mocks = require('../mocks/mocks');
 
 describe('Mode', function() {
   describe('Mode Press', function() {
@@ -7,10 +7,8 @@ describe('Mode', function() {
         
         (async ()=>{
 
-            require('../mocks/mocks');
-            try{fs.unlinkSync('device.json');}catch(e){console.log(e)}
-
             var gpio = require('rpi-gpio');
+            mocks.testSetup();
             await require('../../src/mode_sp_mgmt');
             var state = require('../../src/state.js');
             gpio.emit('change', state.getProp('modeChangeIO'), 1); 
