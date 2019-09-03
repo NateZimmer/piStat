@@ -30,7 +30,7 @@ mockTime.sleep = (ms)=>{
 }
 
 
-var clock = mockTime.lolex.createClock(Date.now());
+var clock = mockTime.lolex.createClock(0);
 mockTime.fixTimers(clock);
 mockTime.clock = clock;
 

@@ -1,0 +1,19 @@
+const EventEmitter = require('events');
+class GPIO extends EventEmitter {}
+const gpio = new GPIO();
+
+
+gpio.setup = ()=>{};
+gpio.write = ()=>{}
+
+gpio.promise = {
+    setup: (pin,dir)=>{
+        return new Promise(resolve=>{ resolve()});
+    },
+    write: (pin,value)=>{
+        return new Promise(resolve=>{ resolve()});
+    }
+};
+
+
+module.exports = gpio;

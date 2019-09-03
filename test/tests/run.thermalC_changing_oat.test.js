@@ -1,4 +1,4 @@
-jest.setTimeout(60000)
+jest.setTimeout(5*60*1000)
 
 describe('Sys Test', function() {
 
@@ -19,8 +19,9 @@ describe('Sys Test', function() {
             state.initStates();
             state.covState();
 
-            model.time_constant = 1800;
-            model.reset(65);
+            model.time_constant = 3600;
+            model.dt=30;
+            model.reset(60);
 
             // Simulate mode press chnage to heat 
             await mocks.t.sleep(10);
@@ -33,25 +34,30 @@ describe('Sys Test', function() {
             gpio.emit('change', state.getProp('modeChangeIO'), 1); 
             mocks.t.clock.tick(10);
 
-            for(var i = 0; i < 360; i++){
+            for(var i = 0; i < 60*24*2; i++){
                 model.step(state.getProp('heat1'));
                 BME280.temperature_C =  (5/9)*(model.temperature-32);
-                mocks.t.clock.tick(10000);
-                await mocks.t.sleep(1);
+                model.oat = Math.sin(i*2*Math.PI/(60*24*2))*15+60;
+                mocks.t.clock.tick(30000);
+                await mocks.t.sleep(0);
+                if(i%100 == 0){
+                    state.updateState('outdoorAirTemperature',model.oat);
+                }
+                
             }
             var passed = Math.abs(state.getProp('temperature') - state.getProp('activeSp'))<1;
             console.log(state.getProp('temperature'),state.getProp('activeSp'));
             state.covState();
 
             svg_plot.plot(log.totalLog,{
-                fileName:'test/results/HeatControlExample',
+                fileName:'test/results/HeatControlExampleOAT',
                 timeKey:'Time',
                 pivotCSV:true,
                 pivotKey:'Point',
                 pivotValue:'Value',
                 y2List:['heat1'],
-                includeList:['activeSp','temperature','heat1'],
-                title: 'Heating Example',
+                includeList:['activeSp','temperature','heat1','outdoorAirTemperature'],
+                title: 'Heating Example: OAT over and under saturation',
                 y2Range:[0,3]
             });
             

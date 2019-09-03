@@ -167,6 +167,19 @@ state.updateState = (prop,value)=>{
 }
 
 
+state.covState = ()=>{
+    for(var prop in state.props){
+        var value = state.getProp(prop);
+        var val = typeof(value) == 'string' ? state.getIndex(prop) : value;
+        if(typeof(value) == 'string'){
+            log.cov(prop,val,value);
+        }else{
+            log.cov(prop,val);
+        }
+    }
+}
+
+
 // Pumps up entire state
 state.uploadState = ()=>{
     var influxArray = [];

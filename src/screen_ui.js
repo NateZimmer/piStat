@@ -37,8 +37,8 @@ var tempY = 18;
 var oled = new oled(i2cBus, opts);
 screen_lib.extend(oled);
 
-async function drawNetInfo(xPos,yPos,interface){
-  var ssid = await os_lib.get_ssid(interface);
+async function drawNetInfo(xPos,yPos,net_face){
+  var ssid = await os_lib.get_ssid(net_face);
   
   if(ssid){
     ssid = ssid.substr(0,15);
@@ -52,7 +52,7 @@ async function drawNetInfo(xPos,yPos,interface){
   var nets = os_lib.getNetworkObjs();
   var ipStr = '';
   for(var net of nets){
-    if(net.type.toLowerCase().includes(interface)){
+    if(net.type.toLowerCase().includes(net_face)){
       ipStr = net.ip;
       break;
     }

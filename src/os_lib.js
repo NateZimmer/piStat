@@ -79,10 +79,10 @@ function runCommand(cmd){
 os_lib.runCommand = runCommand;
 
 
-async function get_ssid(interface){
+async function get_ssid(net_face){
     var result = undefined;
     try{
-        result = await runCommand('iwconfig | grep ' + interface);
+        result = await runCommand('iwconfig | grep ' + net_face);
         result = result.match(/ESSID:".*"/g);
         result = result[0].split('"')[1]
     }catch(e){

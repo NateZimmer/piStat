@@ -33,25 +33,25 @@ describe('Sys Test', function() {
             gpio.emit('change', state.getProp('modeChangeIO'), 1); 
             mocks.t.clock.tick(10);
 
-            for(var i = 0; i < 360; i++){
+            for(var i = 0; i < 360*2; i++){
                 model.step(state.getProp('heat1'));
-                BME280.temperature_C =  (5/9)*(model.temperature-32);
+                BME280.temperature_C =  (5/9)*(model.temperature-32)+Math.random()*0.5;
                 mocks.t.clock.tick(10000);
-                await mocks.t.sleep(1);
+                await mocks.t.sleep(0);
             }
             var passed = Math.abs(state.getProp('temperature') - state.getProp('activeSp'))<1;
             console.log(state.getProp('temperature'),state.getProp('activeSp'));
             state.covState();
 
             svg_plot.plot(log.totalLog,{
-                fileName:'test/results/HeatControlExample',
+                fileName:'test/results/HeatControlNoise',
                 timeKey:'Time',
                 pivotCSV:true,
                 pivotKey:'Point',
                 pivotValue:'Value',
                 y2List:['heat1'],
                 includeList:['activeSp','temperature','heat1'],
-                title: 'Heating Example',
+                title: 'Heating Example: With Noise',
                 y2Range:[0,3]
             });
             

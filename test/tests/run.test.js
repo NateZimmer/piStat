@@ -1,19 +1,9 @@
-var assert = require('assert');
 require('../mocks/mocks');
 
-describe('Full System', function() {
-  describe('Load', function() {
-    it('System should Load', function(done) {
-        
-        (async ()=>{
+test('Full System load', async function() { 
 
-            require('../mocks/mocks');
-            await require('../../src/run');
-            setTimeout( ()=>{done();},1000);
+    await require('../../src/run');
+    expect(1).toBe(1);
 
-        })();
-        
-    });
-  });
 });
 

@@ -1,14 +1,7 @@
-var assert = require('assert');
-require('../mocks/mocks');
+jest.mock('../../src/sendToInflux');
 
-describe('Temperature', function() {
-  describe('Temperature Init', function() {
-    it('It should be able to load module', function(done) {
-        
+test('Load Temp Module', function() { 
         var temperature = require('../../src/temperature');
-        
-        assert(temperature != undefined);
-        setTimeout( ()=>{done();},500);
-    });
-  });
+        var passed = temperature != undefined; 
+        expect(passed).toBe(true);
 });
