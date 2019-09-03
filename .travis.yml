@@ -5,9 +5,7 @@ node_js:
 
 jobs:
   include:
-    - stage: install
-    - script: "npm install"
     - stage: test
-    - script: "npm run test"
+      script: "npm run test"
     - stage: coverage
-    - script: "npm run coverage"
+      script: "npm run coverage"
