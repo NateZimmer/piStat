@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "jest",
-    "coverage": "jest --collectCoverage"
+    "coverage": "jest --coverage --coverageReporters=text-lcov | coveralls"
   },
   "author": "",
   "license": "ISC",
@@ -17,6 +17,7 @@
     "public-ip": "^3.1.0"
   },
   "devDependencies": {
+    "coveralls": "^3.0.6",
     "jest": "^24.9.0",
     "lolex": "^4.2.0",
     "nyc": "^14.1.1",
