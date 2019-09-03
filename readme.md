@@ -1,6 +1,6 @@
 # PI Stat
 
-[![](https://api.travis-ci.com/NateZimmer/piStat.svg?branch=master)](https://travis-ci.com/NateZimmer/piStat)
+[![](https://api.travis-ci.com/NateZimmer/piStat.svg?branch=master)](https://travis-ci.com/NateZimmer/piStat) [![Coverage Status](https://coveralls.io/repos/github/NateZimmer/piStat/badge.svg?branch=master)](https://coveralls.io/github/NateZimmer/piStat?branch=master) [![MIT license](http://img.shields.io/badge/license-MIT-brightgreen.svg)](http://opensource.org/licenses/MIT) 
 
 
 ***An affordable thermostat for engineers by engineers.*** 
