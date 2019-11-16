@@ -22,7 +22,7 @@ describe('Sys Test', function() {
             model.time_constant = 1800;
             model.reset(65);
 
-            // Simulate mode press chnage to heat 
+            // Simulate mode press change to heat 
             await mocks.t.sleep(10);
             gpio.emit('change', state.getProp('modeChangeIO'), 1);
             mocks.t.clock.tick(10); 
