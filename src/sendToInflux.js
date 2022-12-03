@@ -6,14 +6,39 @@ require('colors');
 var path = require('path');
 var debug = 0;
 
-var influxConfigPath = path.resolve(__dirname,'influxConfig.json');
-var config = JSON.parse(fs.readFileSync(influxConfigPath).toString()); // Read Database Config File 
+var config = {
+    "influxURL" : "localhost",
+    "dbName" : "db_name",
+    "nginxURL" : "",
+    "influxUser" : "db_user",
+    "influxPassword" : "db_password",
+    "port" : 8086,
+    "https" : false
+};
 
 String.prototype.replaceAll = function(search, replacement) {
     var target = this;
     return target.split(search).join(replacement);
 };
 
+function populate_config()
+{
+    var config_list = ["dbName","influxUser","influxPassword"];
+    for(var property of config_list)
+    {
+        var value = config[property];
+        if(process.env[value])
+        {
+            console.log(`Setting ${property} with env variable`);
+            config[property] = process.env[value];
+        }
+        else
+        {
+            console.log(`Could not find ${value} env`);
+        }
+    }
+}
+populate_config();
 
 if(config.https){ // User may wish to use HTTP/HTTPS
     var HTTP_S = require('https');
