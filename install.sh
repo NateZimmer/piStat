@@ -1,5 +1,10 @@
 #!/bin/bash
 
+if ! command -v screen &> /dev/null
+then
+    sudo apt-get -y install screen
+fi
+
 # Check variable config file
 echo Checking config file 
 script_filename=my_variables
@@ -55,11 +60,10 @@ screen_out=$(screen -list)
 # Create Screen Instance running thermostat
 if [[ "$screen_out" == *"therm"* ]]
 then
-    echo Found screen session
+    echo Node/Screen session already started
 else
     echo Starting screen instance "therm"
     screen -dmS therm && screen -S therm -X stuff ". ./my_variables.sh && node src/run.js\n"
 fi
-
 
 exit 0
