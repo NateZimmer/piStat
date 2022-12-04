@@ -3,6 +3,7 @@
 
 var beautify = require("json-beautify");
 var fs = require('fs');
+const EventEmitter = require('events');
 require('colors');
 var influx = require('./sendToInflux.js');
 var timer = require('./timer')
@@ -10,8 +11,9 @@ var log = require('./log');
 var debug = false;
 var bootTime = timer.Date.now();
 
-var stateFileName = 'device.json'
-var state = {};
+var stateFileName = 'device.json';
+class STATE extends EventEmitter {}
+var state = new STATE();
 
 state.initStates = ()=>{
     var props = {};
@@ -50,7 +52,8 @@ state.initStates = ()=>{
     props.longitude = 0;
     props.darkSkyKey = 'null';
     props.outdoorAirTemperature = 72;
-    props.lastOcc = 0;
+    props.last_occ = Date.now();
+    props.occ_timeout = 1*60*1000;
     props.screen_on = 1;
 
     // PINS
@@ -158,7 +161,8 @@ state.updateState = (prop,value)=>{
         console.log('[ERROR] '.red + 'Invalid state property: ' + prop.yellow);
         return;
     }
-    var oldVal = state.getProp(prop); 
+    var oldVal = state.getProp(prop);
+    state.emit(prop, value);
     state.setProp(prop,value);
     if( oldVal != value)
     {

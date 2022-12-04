@@ -11,6 +11,8 @@ function oled_i2c_bus(){
     this.writeString = ()=>{};
     this.clearDisplay = ()=>{};
     this.drawLine = ()=>{};
+    this.turnOffDisplay = ()=>{};
+    this.turnOnDisplay = ()=>{};
 }
 mock('oled-i2c-bus', oled_i2c_bus);
 

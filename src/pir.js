@@ -28,18 +28,27 @@ async function setup(){
 
 
 function hande_PIR_data(value){
-		gpio.write(state.getProp('led_pin'), !value); // Logic reversed on led pin  
-		value = value ? 1 : 0;
-		state.updateState('occSense',value);
-		if(value)
-		{
-			state.props.lastOcc = Date.now();
-			if(state.props.screen_on == false)
-			{
-				
-			}
-		}
+	gpio.write(state.getProp('led_pin'), !value); // Logic reversed on led pin  
+	value = value ? 1 : 0;
+	state.updateState('occSense',value);
+	state.updateState('occState',state.props.occStates.indexOf('Home'));
+	state.setProp('last_occ', Date.now());
 }
 
+function manage_occupancy()
+{
+	// Timeout occState to away based on occ_timeout
+	timer.setInterval(()=>{
+		if(state.props.occState == state.props.occStates.indexOf('Home'))
+		{
+			// Has occupancy expired? 
+			if(Date.now() > (state.props.last_occ + state.props.occ_timeout))
+			{
+				state.updateState('occState', state.props.occStates.indexOf('Away'));
+			}
+		}
+	},5000);
+}
+manage_occupancy();
 
 module.exports = setup()

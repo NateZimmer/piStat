@@ -166,4 +166,19 @@ timer.setTimeout(()=>{
   },1.5*1000)
 },5000)
 
+function manage_screen_blackout()
+{
+  state.on('occState', function (data){
+    if(state.props.occState == state.props.occStates.indexOf('Away'))
+    {
+      oled.turnOffDisplay();
+    }
+    else
+    {
+      oled.turnOnDisplay();
+    }
+  });
+}
+manage_screen_blackout();
+
 module.exports = screen_ui;

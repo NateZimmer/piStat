@@ -19,11 +19,12 @@ describe('Sys Test', function() {
             state.initStates();
             state.covState();
 
+            // Initialize model
             model.time_constant = 3600;
             model.dt=30;
             model.reset(60);
 
-            // Simulate mode press chnage to heat 
+            // Simulate mode press change to heat 
             await mocks.t.sleep(10);
             gpio.emit('change', state.getProp('modeChangeIO'), 1);
             mocks.t.clock.tick(10); 
@@ -38,12 +39,9 @@ describe('Sys Test', function() {
                 model.step(state.getProp('heat1'));
                 BME280.temperature_C =  (5/9)*(model.temperature-32);
                 model.oat = Math.sin(i*2*Math.PI/(60*24*2))*15+60;
-                mocks.t.clock.tick(30000);
+                mocks.t.clock.tick(model.dt * 1000); // advance time by XX ms
                 await mocks.t.sleep(0);
-                if(i%100 == 0){
-                    state.updateState('outdoorAirTemperature',model.oat);
-                }
-                
+                state.updateState('outdoorAirTemperature',model.oat);
             }
             var passed = Math.abs(state.getProp('temperature') - state.getProp('activeSp'))<1;
             console.log(state.getProp('temperature'),state.getProp('activeSp'));
@@ -61,8 +59,7 @@ describe('Sys Test', function() {
                 y2Range:[0,3]
             });
             
-
-            log.saveFile('myLog.csv');
+            log.saveFile('thermal_changing_ota.csv');
             expect(passed).toBe(true);
         
     });
