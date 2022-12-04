@@ -29,7 +29,7 @@ state.initStates = ()=>{
     props.modes = ['Off','Heat','Cool','Auto'];
     props.mode = {value: props.modes[0],values:['Off','Heat','Cool','Auto']}; 
     props.occStates = ['Home','Away'];
-    props.occState = props.occStates[0];
+    props.occ_state = 0;
     props.netSesne = 0;
     props.netSesneEn = 0;
     props.occSense = 0;
@@ -162,10 +162,10 @@ state.updateState = (prop,value)=>{
         return;
     }
     var oldVal = state.getProp(prop);
-    state.emit(prop, value);
     state.setProp(prop,value);
     if( oldVal != value)
     {
+        state.emit(prop, value);
         var val = typeof(value) == 'string' ? state.getIndex(prop) : value;
         if(typeof(value) == 'string'){
             log.cov(prop,val,value);

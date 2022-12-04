@@ -168,8 +168,8 @@ timer.setTimeout(()=>{
 
 function manage_screen_blackout()
 {
-  state.on('occState', function (data){
-    if(state.props.occState == state.props.occStates.indexOf('Away'))
+  state.on('occ_state', function (data){
+    if(state.props.occ_state == state.props.occStates.indexOf('Away'))
     {
       oled.turnOffDisplay();
     }
