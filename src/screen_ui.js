@@ -91,6 +91,13 @@ function drawTime(xpos,ypos){
   oled.LETTERSPACING = 1;
 }
 
+function draw_occupancy_dot(ticks)
+{
+  var str = (ticks % 2 == 0) ?  "*" : " ";
+  oled.setCursor(modeX+5*5,4);
+  oled.writeString(font, 1, str , 1, true);
+}
+
 async function drawTemp(){
   var temp = state.getProp('temperature');
   oled.centerTextWrite(font,tempY,temp.toFixed(1),3);
@@ -149,6 +156,14 @@ timer.setTimeout(()=>{
     drawTime(0,timeH);
     debug ? console.log('Updating Time') : null;
   },60*1000)
+},5000)
+
+timer.setTimeout(()=>{
+  var ticks = 0;
+  timer.setInterval(()=>{
+    ticks++;
+    draw_occupancy_dot(ticks);
+  },1.5*1000)
 },5000)
 
 module.exports = screen_ui;

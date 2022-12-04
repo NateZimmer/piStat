@@ -31,6 +31,14 @@ function hande_PIR_data(value){
 		gpio.write(state.getProp('led_pin'), !value); // Logic reversed on led pin  
 		value = value ? 1 : 0;
 		state.updateState('occSense',value);
+		if(value)
+		{
+			state.props.lastOcc = Date.now();
+			if(state.props.screen_on == false)
+			{
+				
+			}
+		}
 }
 
 

@@ -50,6 +50,8 @@ state.initStates = ()=>{
     props.longitude = 0;
     props.darkSkyKey = 'null';
     props.outdoorAirTemperature = 72;
+    props.lastOcc = 0;
+    props.screen_on = 1;
 
     // PINS
 
@@ -144,7 +146,12 @@ state.getIndex = (propName)=>{
 }
 
 
-// Updates the state
+/**
+ * @brief Update state of properties for COV tracking
+ * @param {} prop - State property 
+ * @param {*} value - value of state property
+ * @returns 
+ */
 state.updateState = (prop,value)=>{
     
     if(state.props[prop] == undefined){
